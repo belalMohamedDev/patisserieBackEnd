@@ -57,7 +57,7 @@ elminiawy-patisserie/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/elminiawy-patisserie.git
+git clone https://github.com/belalMohamedDev/patisserieBackEnd.git
 cd backend
 ```
 
