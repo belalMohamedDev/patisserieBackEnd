@@ -133,6 +133,12 @@ app.use(
   })
 );
 
+
+// Swagger JSON raw endpoint
+app.get("/api-docs-json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpecs);
+});
 //Route error middleware
 app.all("*", (req, res, next) => {
   next(new ApiError(`can't find this route: ${req.originalUrl}`, 404));
