@@ -18,9 +18,13 @@ const options = {
     },
     servers: [
       {
+        url: "https://elminiawy-patisserie.vercel.app",
+        description: "Production server",
+      },
+      {
         url:
           process.env.NODE_ENV === "production"
-            ? process.env.API_URL || "https://your-production-domain.com"
+            ? process.env.API_URL || "https://elminiawy-patisserie.vercel.app"
             : `http://localhost:${process.env.PORT || 8080}`,
         description:
           process.env.NODE_ENV === "production"
