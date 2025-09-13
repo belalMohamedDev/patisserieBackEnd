@@ -133,7 +133,11 @@ app.use(
   })
 );
 
-
+// Swagger JSON endpoint
+app.get("/swagger.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpecs);
+});
 
 //Route error middleware
 app.all("*", (req, res, next) => {

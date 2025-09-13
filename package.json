@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "generate-swagger": "node generate-swagger.js",
+    "test-swagger": "node test-swagger.js",
+    "download-swagger": "node download-swagger.js"
   },
   "author": "",
   "engines": {
