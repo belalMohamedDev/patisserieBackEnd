@@ -16,7 +16,7 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
     status: 0, // Only include orders with status 2
   });
 
-    pendingAdminOrders = orderModel.schema.methods.localize.call(pendingAdminOrders, lang);
+  pendingAdminOrders = pendingAdminOrders.map(order => order.localize(lang));
 
 
   res.status(200).send({
