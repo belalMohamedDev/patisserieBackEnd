@@ -84,42 +84,25 @@ const OrderSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-// OrderSchema.pre(/^find/, function (next) {
-//   const lang = this.options.lang || "en";
-
-//   this.populate({
-//     path: "user",
-//     select: "name image email phone",
-//   })
-//     .populate({
-//       path: "cartItems.product",
-//       select: `title.${lang} image ratingsAverage subCategory`, 
-//     })
-//     .populate({
-//       path: "shippingAddress",
-//     });
-
-//   next();
-// });
-
-
-// ========= Pre hook (populate) =========
 OrderSchema.pre(/^find/, function (next) {
+  // اللغة اللي جاية من options (بنمررها من الـ controller)
+  const lang = this.options.lang || "en";
+
   this.populate({
     path: "user",
     select: "name image email phone",
   })
     .populate({
       path: "cartItems.product",
-      select: "title image ratingsAverage subCategory",
+      select: `title.${lang} image ratingsAverage subCategory`, 
       populate: {
         path: "subCategory",
-        select: "title category",
+        select: `title.${lang} category`,
         populate: {
           path: "category",
-          select: "title",
-        },
-      },
+          select: `title.${lang}`
+        }
+      }
     })
     .populate({
       path: "shippingAddress",
@@ -128,27 +111,75 @@ OrderSchema.pre(/^find/, function (next) {
   next();
 });
 
-// ========= Post hook (localization) =========
+
 OrderSchema.post(/^find/, function (docs, next) {
   const lang = this.options.lang || "en";
 
-  docs.forEach((order) => {
-    order.cartItems.forEach((item) => {
+  docs.forEach(order => {
+    order.cartItems.forEach(item => {
       if (item.product?.title?.[lang]) {
-        item.product.title = item.product.title[lang];
+        item.product.title = item.product.title[lang]; // يخليها سترينج بدل object
       }
       if (item.product?.subCategory?.title?.[lang]) {
         item.product.subCategory.title = item.product.subCategory.title[lang];
       }
       if (item.product?.subCategory?.category?.title?.[lang]) {
-        item.product.subCategory.category.title =
-          item.product.subCategory.category.title[lang];
+        item.product.subCategory.category.title = item.product.subCategory.category.title[lang];
       }
     });
   });
 
   next();
 });
+
+
+
+// // ========= Pre hook (populate) =========
+// OrderSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "user",
+//     select: "name image email phone",
+//   })
+//     .populate({
+//       path: "cartItems.product",
+//       select: "title image ratingsAverage subCategory",
+//       populate: {
+//         path: "subCategory",
+//         select: "title category",
+//         populate: {
+//           path: "category",
+//           select: "title",
+//         },
+//       },
+//     })
+//     .populate({
+//       path: "shippingAddress",
+//     });
+
+//   next();
+// });
+
+// // ========= Post hook (localization) =========
+// OrderSchema.post(/^find/, function (docs, next) {
+//   const lang = this.options.lang || "en";
+
+//   docs.forEach((order) => {
+//     order.cartItems.forEach((item) => {
+//       if (item.product?.title?.[lang]) {
+//         item.product.title = item.product.title[lang];
+//       }
+//       if (item.product?.subCategory?.title?.[lang]) {
+//         item.product.subCategory.title = item.product.subCategory.title[lang];
+//       }
+//       if (item.product?.subCategory?.category?.title?.[lang]) {
+//         item.product.subCategory.category.title =
+//           item.product.subCategory.category.title[lang];
+//       }
+//     });
+//   });
+
+//   next();
+// });
 
 // ========= Plugins & Index =========
 OrderSchema.plugin(mongooseI18n, {
