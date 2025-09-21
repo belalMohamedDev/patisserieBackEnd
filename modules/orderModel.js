@@ -103,28 +103,30 @@ const OrderSchema = mongoose.Schema(
 // });
 
 
-OrderSchema.post(/^find/, function (docs, next) {
-  const lang = this.getOptions().lang || "en";
-
-  docs.forEach(order => {
-    order.cartItems.forEach(item => {
-      if (item.product?.title) {
-        // لو في ترجمة للغة المطلوبة حطها بدال الأوبجكت كله
-        item.product.title = item.product.title[lang] || item.product.title.en;
+OrderSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "name image email phone",
+  })
+    .populate({
+      path: "cartItems.product",
+      select: "title image ratingsAverage subCategory", // هيرجع مع العنوان
+      populate: {
+        path: "subCategory",
+        select: "title category",
+        populate: {
+          path: "category",
+          select: "title"
+        }
       }
-      if (item.product?.subCategory?.title) {
-        item.product.subCategory.title =
-          item.product.subCategory.title[lang] || item.product.subCategory.title.en;
-      }
-      if (item.product?.subCategory?.category?.title) {
-        item.product.subCategory.category.title =
-          item.product.subCategory.category.title[lang] || item.product.subCategory.category.title.en;
-      }
+    })
+    .populate({
+      path: "shippingAddress",
     });
-  });
 
   next();
 });
+
 
 
 
