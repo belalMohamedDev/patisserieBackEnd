@@ -96,7 +96,7 @@ OrderSchema.pre(/^find/, function (next) {
   })
     .populate({
       path: "cartItems.product",
-      select: `title.${lang} image ratingsAverage `, 
+      select: `title image ratingsAverage `, 
  
     })
     .populate({
