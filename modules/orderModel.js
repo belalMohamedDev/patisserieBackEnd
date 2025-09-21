@@ -102,7 +102,7 @@ OrderSchema.pre(/^find/, function (next) {
 
 
 
-userSchema.plugin(mongooseI18n, {
+OrderSchema.plugin(mongooseI18n, {
   locales: ["en", "ar"],
 });
 
