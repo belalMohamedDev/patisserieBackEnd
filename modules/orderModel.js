@@ -103,6 +103,7 @@ const OrderSchema = mongoose.Schema(
 // });
 
 
+// ========= Pre hook (populate) =========
 OrderSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
@@ -110,15 +111,15 @@ OrderSchema.pre(/^find/, function (next) {
   })
     .populate({
       path: "cartItems.product",
-      select: "title image ratingsAverage subCategory", // هيرجع مع العنوان
+      select: "title image ratingsAverage subCategory",
       populate: {
         path: "subCategory",
         select: "title category",
         populate: {
           path: "category",
-          select: "title"
-        }
-      }
+          select: "title",
+        },
+      },
     })
     .populate({
       path: "shippingAddress",
@@ -127,13 +128,12 @@ OrderSchema.pre(/^find/, function (next) {
   next();
 });
 
-
-
+// ========= Post hook (localization) =========
 OrderSchema.post(/^find/, function (docs, next) {
   const lang = this.options.lang || "en";
 
-  docs.forEach(order => {
-    order.cartItems.forEach(item => {
+  docs.forEach((order) => {
+    order.cartItems.forEach((item) => {
       if (item.product?.title?.[lang]) {
         item.product.title = item.product.title[lang];
       }
@@ -141,7 +141,8 @@ OrderSchema.post(/^find/, function (docs, next) {
         item.product.subCategory.title = item.product.subCategory.title[lang];
       }
       if (item.product?.subCategory?.category?.title?.[lang]) {
-        item.product.subCategory.category.title = item.product.subCategory.category.title[lang];
+        item.product.subCategory.category.title =
+          item.product.subCategory.category.title[lang];
       }
     });
   });
@@ -149,15 +150,10 @@ OrderSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-
-
-
-
+// ========= Plugins & Index =========
 OrderSchema.plugin(mongooseI18n, {
   locales: ["en", "ar"],
 });
-
-
 
 OrderSchema.index({ nearbyStoreAddress: 1, status: 1, canceledByDrivers: 1 });
 
