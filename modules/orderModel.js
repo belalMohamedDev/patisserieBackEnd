@@ -96,15 +96,8 @@ OrderSchema.pre(/^find/, function (next) {
   })
     .populate({
       path: "cartItems.product",
-      select: `title.en image ratingsAverage subCategory`, 
-      populate: {
-        path: "subCategory",
-        select: `title.${lang} category`,
-        populate: {
-          path: "category",
-          select: `title.${lang}`
-        }
-      }
+      select: `title.${lang} image ratingsAverage `, 
+ 
     })
     .populate({
       path: "shippingAddress",

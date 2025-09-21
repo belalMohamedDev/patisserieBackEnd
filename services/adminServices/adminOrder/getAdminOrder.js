@@ -13,12 +13,19 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
   const pendingAdminOrders = await orderModel.find({
     nearbyStoreAddress: req.userModel.storeAddress,
     status: 0,
-  }).setOptions({ lang }); // نمرر اللغة للـ pre hook
+  }).setOptions({ lang }); 
+
+
+      const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
+      pendingAdminOrders,
+      lang
+    );
+
 
   res.status(200).send({
     status: true,
     message: "Successfully retrieved all pending orders for admin",
-    data: pendingAdminOrders,
+    data: localizedDocument,
   });
 });
 
