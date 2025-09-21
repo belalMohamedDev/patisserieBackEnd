@@ -14,9 +14,8 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
   const pendingAdminOrders = await orderModel.find({
     nearbyStoreAddress: req.userModel.storeAddress, // Filter by nearby branches
     status: 0, // Only include orders with status 2
-  });
+  }).setOptions({ lang: req.headers["lang"] || "en" });
 
-  pendingAdminOrders = pendingAdminOrders.map(order => order.localize(lang));
 
 
   res.status(200).send({
