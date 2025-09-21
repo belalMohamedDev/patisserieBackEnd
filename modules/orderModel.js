@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-var mongooseI18n = require("mongoose-i18n-localize");
 
 // Define the CartItem schema
 
@@ -101,9 +100,7 @@ OrderSchema.pre(/^find/, function (next) {
 });
 
 
-OrderSchema.plugin(mongooseI18n, {
-  locales: ["en", "ar"],
-});
+
 
 OrderSchema.index({ nearbyStoreAddress: 1, status: 1, canceledByDrivers: 1 });
 

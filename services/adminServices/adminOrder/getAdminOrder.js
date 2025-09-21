@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
+var mongooseI18n = require("mongoose-i18n-localize");
 const orderModel = require("../../../modules/orderModel");
+
 
 
 // //  @dec  get all pending  order to admin
@@ -9,7 +11,7 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
   const pendingAdminOrders = await orderModel.find({
     nearbyStoreAddress: req.userModel.storeAddress, // Filter by nearby branches
     status: 0, // Only include orders with status 2
-  });
+  }).localize(req.headers["lang"] || "en");
 
   res.status(200).send({
     status: true,
