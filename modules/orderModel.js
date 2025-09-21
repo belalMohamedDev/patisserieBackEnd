@@ -129,6 +129,28 @@ OrderSchema.pre(/^find/, function (next) {
 
 
 
+OrderSchema.post(/^find/, function (docs, next) {
+  const lang = this.options.lang || "en";
+
+  docs.forEach(order => {
+    order.cartItems.forEach(item => {
+      if (item.product?.title?.[lang]) {
+        item.product.title = item.product.title[lang];
+      }
+      if (item.product?.subCategory?.title?.[lang]) {
+        item.product.subCategory.title = item.product.subCategory.title[lang];
+      }
+      if (item.product?.subCategory?.category?.title?.[lang]) {
+        item.product.subCategory.category.title = item.product.subCategory.category.title[lang];
+      }
+    });
+  });
+
+  next();
+});
+
+
+
 
 
 OrderSchema.plugin(mongooseI18n, {
