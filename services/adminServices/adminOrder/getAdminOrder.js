@@ -1,5 +1,4 @@
 const asyncHandler = require("express-async-handler");
-var mongooseI18n = require("mongoose-i18n-localize");
 const orderModel = require("../../../modules/orderModel");
 
 
