@@ -85,6 +85,9 @@ const OrderSchema = mongoose.Schema(
 );
 
 OrderSchema.pre(/^find/, function (next) {
+
+    const lang = this.options.lang || "en"; 
+
   this.populate({
     path: "user",
     select: "name image email phone",

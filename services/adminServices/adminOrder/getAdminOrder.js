@@ -8,7 +8,6 @@ const orderModel = require("../../../modules/orderModel");
 // //  @access private/admin
 exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
 
-    const lang = req.headers["lang"] || "en";
 
 
   const pendingAdminOrders = await orderModel.find({
