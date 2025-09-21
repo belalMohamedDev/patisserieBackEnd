@@ -7,10 +7,17 @@ const orderModel = require("../../../modules/orderModel");
 // //  @route  Get /api/v1/orders/admin/pending
 // //  @access private/admin
 exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
+
+    const lang = req.headers["lang"] || "en";
+
+
   const pendingAdminOrders = await orderModel.find({
     nearbyStoreAddress: req.userModel.storeAddress, // Filter by nearby branches
     status: 0, // Only include orders with status 2
-  }).localize(req.headers["lang"] || "en");
+  });
+
+    pendingAdminOrders = orderModel.schema.methods.localize.call(pendingAdminOrders, lang);
+
 
   res.status(200).send({
     status: true,
