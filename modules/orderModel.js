@@ -85,8 +85,7 @@ const OrderSchema = mongoose.Schema(
 );
 
 OrderSchema.pre(/^find/, function (next) {
-
-    const lang = this.options.lang || "en"; 
+  const lang = this.options.lang || "en";
 
   this.populate({
     path: "user",
@@ -94,7 +93,7 @@ OrderSchema.pre(/^find/, function (next) {
   })
     .populate({
       path: "cartItems.product",
-      select: `title.${lang} image ratingsAverage`,
+      select: `title.${lang} image ratingsAverage subCategory`, 
     })
     .populate({
       path: "shippingAddress",
@@ -102,6 +101,7 @@ OrderSchema.pre(/^find/, function (next) {
 
   next();
 });
+
 
 
 

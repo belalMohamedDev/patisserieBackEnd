@@ -6,16 +6,14 @@ const orderModel = require("../../../modules/orderModel");
 // //  @dec  get all pending  order to admin
 // //  @route  Get /api/v1/orders/admin/pending
 // //  @access private/admin
+
 exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
-
-
+  const lang = req.headers["lang"] || "en";
 
   const pendingAdminOrders = await orderModel.find({
-    nearbyStoreAddress: req.userModel.storeAddress, // Filter by nearby branches
-    status: 0, // Only include orders with status 2
-  }).setOptions({ lang: req.headers["lang"] || "en" });
-
-
+    nearbyStoreAddress: req.userModel.storeAddress,
+    status: 0,
+  }).setOptions({ lang }); // نمرر اللغة للـ pre hook
 
   res.status(200).send({
     status: true,
@@ -23,6 +21,7 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
     data: pendingAdminOrders,
   });
 });
+
 
 // //  @dec  get all admin order
 // //  @route  Get /api/v1/orders/admin
