@@ -84,20 +84,44 @@ const OrderSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-OrderSchema.pre(/^find/, function (next) {
-  const lang = this.options.lang || "en";
+// OrderSchema.pre(/^find/, function (next) {
+//   const lang = this.options.lang || "en";
 
-  this.populate({
-    path: "user",
-    select: "name image email phone",
-  })
-    .populate({
-      path: "cartItems.product",
-      select: `title.${lang} image ratingsAverage subCategory`, 
-    })
-    .populate({
-      path: "shippingAddress",
+//   this.populate({
+//     path: "user",
+//     select: "name image email phone",
+//   })
+//     .populate({
+//       path: "cartItems.product",
+//       select: `title.${lang} image ratingsAverage subCategory`, 
+//     })
+//     .populate({
+//       path: "shippingAddress",
+//     });
+
+//   next();
+// });
+
+
+OrderSchema.post(/^find/, function (docs, next) {
+  const lang = this.getOptions().lang || "en";
+
+  docs.forEach(order => {
+    order.cartItems.forEach(item => {
+      if (item.product?.title) {
+        // لو في ترجمة للغة المطلوبة حطها بدال الأوبجكت كله
+        item.product.title = item.product.title[lang] || item.product.title.en;
+      }
+      if (item.product?.subCategory?.title) {
+        item.product.subCategory.title =
+          item.product.subCategory.title[lang] || item.product.subCategory.title.en;
+      }
+      if (item.product?.subCategory?.category?.title) {
+        item.product.subCategory.category.title =
+          item.product.subCategory.category.title[lang] || item.product.subCategory.category.title.en;
+      }
     });
+  });
 
   next();
 });
