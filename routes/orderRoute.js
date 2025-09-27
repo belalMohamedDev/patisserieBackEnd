@@ -368,7 +368,7 @@ router
 
 
   router
-  .route("/admin/cancel")
+  .route("/admin/cancelled")
   .get(authServices.allowedTo("admin"), getAllAdminCancelOrder);
 
 /**

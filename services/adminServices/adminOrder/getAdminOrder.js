@@ -11,15 +11,15 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
   const lang = req.headers["lang"] || "en";
 
   const pendingAdminOrders = await orderModel.find({
-    nearbyStoreAddress: req.userModel.storeAddress,
+
     status: 0,
-  }); 
+  });
 
 
-      const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
-      pendingAdminOrders,
-      lang
-    );
+  const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
+    pendingAdminOrders,
+    lang
+  );
 
 
   res.status(200).send({
@@ -38,21 +38,21 @@ exports.getAllAdminCompleteOrder = asyncHandler(async (req, res, next) => {
   const end = new Date();
   const start = new Date();
 
-// TODO: change to 1 month (see GitHub issue #1)
+  // TODO: change to 1 month (see GitHub issue #1)
   start.setMonth(start.getMonth() - 12);
 
   const compeleteAdminOrders = await orderModel.find({
-    nearbyStoreAddress: req.userModel.storeAddress,
-    status : 4,
+
+    status: 4,
     createdAt: { $gte: start, $lte: end },
   });
 
 
-  
-      const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
-      compeleteAdminOrders,
-      lang
-    );
+
+  const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
+    compeleteAdminOrders,
+    lang
+  );
 
 
   res.status(200).send({
@@ -74,25 +74,22 @@ exports.getAllAdminCancelOrder = asyncHandler(async (req, res, next) => {
   const lang = req.headers["lang"] || "en";
 
 
-
-
   const cancelOrders = await orderModel.find({
-    nearbyStoreAddress: req.userModel.storeAddress,
-    status:  5,
-   
+
+
+    status: 5,
+
   });
 
 
-  
-      const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
-      cancelOrders,
-      lang
-    );
-
+  const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
+    cancelOrders,
+    lang
+  );
 
   res.status(200).send({
     status: true,
-    message: "Successfully retrieved all  orders",
+    message: "Successfully retrieved all cancel orders",
     data: localizedDocument,
   });
 });
