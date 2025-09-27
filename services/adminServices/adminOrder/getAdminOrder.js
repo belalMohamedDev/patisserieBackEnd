@@ -36,7 +36,10 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
 exports.getAllAdminCompleteOrder = asyncHandler(async (req, res, next) => {
   const end = new Date();
   const start = new Date();
-  start.setMonth(start.getMonth() - 1);
+
+// TODO: change to 1 month (see GitHub issue #1)
+
+  start.setMonth(start.getMonth() - 12);
 
   const compeleteAdminOrders = await orderModel.find({
     nearbyStoreAddress: req.userModel.storeAddress,
