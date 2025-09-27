@@ -27,6 +27,7 @@ const {
 const {
   getAllAdminCompleteOrder,
   getAllPendingAdminOrder,
+  getAllAdminCancelOrder
 } = require("../services/adminServices/adminOrder/getAdminOrder");
 
 const {
@@ -364,6 +365,11 @@ router.route("/:id/transit").put(passingOrderTransitToReqBody, orderUpdate);
 router
   .route("/admin/pending")
   .get(authServices.allowedTo("admin"), getAllPendingAdminOrder);
+
+
+  router
+  .route("/admin/cancelled")
+  .get(authServices.allowedTo("admin"), getAllAdminCancelOrder);
 
 /**
  * @swagger
