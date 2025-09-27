@@ -47,9 +47,17 @@ exports.getAllAdminCompleteOrder = asyncHandler(async (req, res, next) => {
     createdAt: { $gte: start, $lte: end },
   });
 
+
+  
+      const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
+      compeleteAdminOrders,
+      lang
+    );
+
+
   res.status(200).send({
     status: true,
     message: "Successfully retrieved all orders",
-    data: compeleteAdminOrders,
+    data: localizedDocument,
   });
 });
