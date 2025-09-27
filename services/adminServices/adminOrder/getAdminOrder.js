@@ -89,6 +89,6 @@ exports.getAllAdminCancelOrder = asyncHandler(async (req, res, next) => {
   res.status(200).send({
     status: true,
     message: "Successfully retrieved all cancel orders",
-    data: localizedDocument,
+    data: cancelOrders,
   });
 });
