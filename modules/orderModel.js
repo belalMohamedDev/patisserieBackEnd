@@ -88,7 +88,6 @@ const OrderSchema = mongoose.Schema(
 //========= Pre hook (populate) =========
 OrderSchema.pre(/^find/, function (next) {
 
-  const lang = this.options.lang || "en";
 
   this.populate({
     path: "user",

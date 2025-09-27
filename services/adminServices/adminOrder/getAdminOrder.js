@@ -13,7 +13,7 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
   const pendingAdminOrders = await orderModel.find({
     nearbyStoreAddress: req.userModel.storeAddress,
     status: 0,
-  }).setOptions({ lang }); 
+  }); 
 
 
       const localizedDocument = orderModel.schema.methods.toJSONLocalizedOnly(
@@ -34,11 +34,11 @@ exports.getAllPendingAdminOrder = asyncHandler(async (req, res, next) => {
 // //  @route  Get /api/v1/orders/admin
 // //  @access private/admin
 exports.getAllAdminCompleteOrder = asyncHandler(async (req, res, next) => {
+  const lang = req.headers["lang"] || "en";
   const end = new Date();
   const start = new Date();
 
 // TODO: change to 1 month (see GitHub issue #1)
-
   start.setMonth(start.getMonth() - 12);
 
   const compeleteAdminOrders = await orderModel.find({
