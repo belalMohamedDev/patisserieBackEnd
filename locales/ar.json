@@ -167,5 +167,6 @@
 	"refreshTokenRequired": "رفريش توكن مطلوب",
 	"thisAccountIsNotYetActive": "هذا الحساب غير مفعل بعد. يرجى الانتظار حتى يقوم المسؤول بتفعيل حسابك.",
 	"deliveredOrder": "طلبات المستلمة",
-	"admin": "ادمن"
+	"admin": "ادمن",
+	"orders": "orders"
 }

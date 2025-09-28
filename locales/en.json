@@ -167,5 +167,6 @@
 	"thisAccountIsNotYetActive": "This account is not yet active. Please wait for the admin to activate your account.",
 	"DriverLocationRequired": "Driver location is required",
 	"deliveredOrder": "delivered order",
-	"admin": "admin"
+	"admin": "admin",
+	"orders": "orders"
 }

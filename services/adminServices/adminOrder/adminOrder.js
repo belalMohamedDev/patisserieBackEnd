@@ -1,4 +1,4 @@
-const OrderModel = require("../../../modules/orderModel");
+const orderModel = require("../../../modules/orderModel");
 const factory = require("../../handleFactor/handlerFactory");
 
 // //  @dec  change order status to admin Approved
@@ -20,4 +20,13 @@ exports.passingOrderTransitToReqBody = (req, res, next) => {
 
 
 // //  @dec  change order status
-exports.orderUpdate = factory.updateOne(OrderModel, "user order");
+exports.orderUpdate = factory.updateOne(orderModel, "user order");
+
+
+
+
+
+// //  @dec  get admin order
+// //  @route  Get /api/v1/orders/admin
+// //  @access private/admin
+exports.getAllAdminOrder = factory.getAllData(orderModel, 'orders',orderModel);
