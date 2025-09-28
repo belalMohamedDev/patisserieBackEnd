@@ -43,7 +43,7 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
     {
       $facet: {
 
-        pandingOrders: [
+        newOrders: [
           { $match: { status: 0 } },
           { $count: "count" }
         ],
@@ -79,7 +79,7 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
     },
     {
       $project: {
-        pandingOrders: { $arrayElemAt: ["$pandingOrders.count", 0] },
+        newOrders: { $arrayElemAt: ["$newOrders.count", 0] },
         completeOrders: { $arrayElemAt: ["$completeOrders.count", 0] },
         cancelledOrders: { $arrayElemAt: ["$cancelledOrders.count", 0] },
         totalSalesToday: { $ifNull: [{ $arrayElemAt: ["$totalSalesToday.total", 0] }, 0] }
@@ -91,7 +91,7 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
   //send success response
   res.status(200).json({
     status: true,
-    message: "Success to get order stats",
+    message: "Success to get order status",
     data: result,
   });
 });
