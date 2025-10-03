@@ -78,6 +78,7 @@ const i18n = require("i18n");
 
 
 //mapbox api key
+//refreshed version using mapbox api
 exports.checkLocationAvailable = asyncHandler(async (req, res, next) => {
   const { latitude, longitude } = req.body;
 
