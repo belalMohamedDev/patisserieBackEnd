@@ -7,14 +7,87 @@ const i18n = require("i18n");
 // @route POST /api/v1/address/isAvailable
 // @access public
 
+
+
+
+//google api key 
+
+// exports.checkLocationAvailable = asyncHandler(async (req, res, next) => {
+//   const { latitude, longitude } = req.body;
+
+//   // const apiKey = process.env.GOOGLE_API_KEY;
+
+//   // Prepare the URL for Google Maps API request for both languages
+//   const googleApiUrlEn = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=en`;
+//   const googleApiUrlAr = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=ar`;
+
+//   const userLocation = {
+//     type: "Point",
+//     coordinates: [parseFloat(longitude), parseFloat(latitude)],
+//   };
+
+//   // Run both the store search and Google Maps API requests in parallel
+//   const [stores, googleApiResponseEn, googleApiResponseAr] = await Promise.all([
+//     storeAddressModel.findOne({
+//       deliveryZone: {
+//         $geoIntersects: {
+//           $geometry: userLocation,
+//         },
+//       },
+//     }),
+//     axios.get(googleApiUrlEn), // Fetch the address in English from Google API
+//     axios.get(googleApiUrlAr), // Fetch the address in Arabic from Google API
+//   ]);
+
+//   // Extract the formatted addresses from Google API responses
+//   const addressEn =
+//     googleApiResponseEn.data.results[0]?.formatted_address ||
+//     i18n.__("addressNotFound");
+//   const addressAr =
+//     googleApiResponseAr.data.results[0]?.formatted_address ||
+//     i18n.__("addressNotFound");
+
+//   const isAddressAvailable =
+//     addressEn !== i18n.__("addressNotFound") &&
+//     addressAr !== i18n.__("addressNotFound");
+
+//   // Check if any stores are available within the delivery range
+//   if (!stores) {
+//     return res.status(200).json({
+//       status: true,
+//       message: i18n.__("noStoresAvailableWithinTheSpecifiedDistance"),
+//       englishAddress: addressEn,
+//       arabicAddress: addressAr,
+//       StoreAddressAvailable: false,
+//       isAddressAvailable: isAddressAvailable,
+//     });
+//   }
+
+//   return res.status(200).json({
+//     status: true,
+//     message: i18n.__("storeFoundWithinTheSpecifiedDistance"),
+//     englishAddress: addressEn,
+//     arabicAddress: addressAr,
+//     StoreAddressAvailable: true,
+//     isAddressAvailable: isAddressAvailable,
+//     nearbyStoreAddressId: stores._id,
+//   });
+// });
+
+
+
+
+//mapbox api key
 exports.checkLocationAvailable = asyncHandler(async (req, res, next) => {
   const { latitude, longitude } = req.body;
 
-  const apiKey = process.env.GOOGLE_API_KEY;
 
-  // Prepare the URL for Google Maps API request for both languages
-  const googleApiUrlEn = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=en`;
-  const googleApiUrlAr = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=ar`;
+  const apiKey = process.env.MAPBOX_API_KEY;
+
+
+  // Prepare the URL for Mapbox API request for both languages
+  const mapboxUrlEn = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${apiKey}&language=en`;
+  const mapboxUrlAr = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${apiKey}&language=ar`;
 
   const userLocation = {
     type: "Point",
@@ -22,7 +95,7 @@ exports.checkLocationAvailable = asyncHandler(async (req, res, next) => {
   };
 
   // Run both the store search and Google Maps API requests in parallel
-  const [stores, googleApiResponseEn, googleApiResponseAr] = await Promise.all([
+  const [stores, mapboxResponseEn, mapboxResponseAr] = await Promise.all([
     storeAddressModel.findOne({
       deliveryZone: {
         $geoIntersects: {
@@ -30,16 +103,16 @@ exports.checkLocationAvailable = asyncHandler(async (req, res, next) => {
         },
       },
     }),
-    axios.get(googleApiUrlEn), // Fetch the address in English from Google API
-    axios.get(googleApiUrlAr), // Fetch the address in Arabic from Google API
+    axios.get(mapboxUrlEn), // Fetch the address in English from Mapbox API
+    axios.get(mapboxUrlAr), // Fetch the address in Arabic from Mapbox API
   ]);
 
-  // Extract the formatted addresses from Google API responses
+  // Extract the formatted addresses from Mapbox responses
   const addressEn =
-    googleApiResponseEn.data.results[0]?.formatted_address ||
+    mapboxResponseEn.data.features[0]?.place_name ||
     i18n.__("addressNotFound");
   const addressAr =
-    googleApiResponseAr.data.results[0]?.formatted_address ||
+    mapboxResponseAr.data.features[0]?.place_name ||
     i18n.__("addressNotFound");
 
   const isAddressAvailable =
