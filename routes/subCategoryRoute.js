@@ -6,8 +6,8 @@ const {
   getOneSubCategory,
   updateSubCategory,
   deleteSubCategory,
-  createFilterObject,
-  getAllSubCategoryFromCategory,
+  createFilterObject,deleteImageBeforeUpdate,
+  getAllSubCategoryFromCategory, resizeSubCategoryImage, uploadSubCategoryImage, uploadImageInCloud
 } = require("../services/subCategoryServices/subCategoryService");
 
 const {
@@ -293,7 +293,8 @@ router.use(authServices.protect, authServices.allowedTo("admin"));
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.route("/").post(createSubCatogryValidator, creatSubCategory);
+router.route("/").post(uploadSubCategoryImage,
+  resizeSubCategoryImage, createSubCatogryValidator, uploadImageInCloud, creatSubCategory);
 
 /**
  * @swagger
@@ -381,7 +382,9 @@ router.route("/").post(createSubCatogryValidator, creatSubCategory);
  */
 router
   .route("/:id")
-  .put(updateSubCatogryValidator, updateSubCategory)
+  .put(uploadSubCategoryImage,
+    resizeSubCategoryImage, updateSubCatogryValidator, uploadImageInCloud,
+    deleteImageBeforeUpdate, updateSubCategory)
   .delete(deletesubCatogryValidator, deleteSubCategory);
 
 module.exports = router;

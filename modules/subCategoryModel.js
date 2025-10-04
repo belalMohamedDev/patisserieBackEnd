@@ -15,6 +15,8 @@ const subCategorySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    image: String,
+    publicId: String,
 
     category: {
       type: mongoose.Schema.ObjectId,
