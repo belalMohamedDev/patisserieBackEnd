@@ -67,7 +67,7 @@ const getAllData = (model, modelName, localizedModel) =>
     }
 
     //build query
-    const countDocuments = await model.countDocuments();
+    const countDocuments = await model.countDocuments(filter);
     const apiFeatures = new ApiFeatures(model.find(filter), req.query)
       .pagination(countDocuments)
       .filter()

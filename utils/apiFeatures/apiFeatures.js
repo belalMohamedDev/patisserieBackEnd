@@ -102,21 +102,21 @@ class ApiFeatures {
 
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
 
-    const paginationResult = {
+    const paginationRuslt = {
       currentPage: page,
       limit,
       numberOfPages: Math.ceil(countDocuments / limit),
     };
 
     if (skip + limit < countDocuments) {
-      paginationResult.next = page + 1;
+      paginationRuslt.next = page + 1;
     }
 
     if (skip > 0) {
-      paginationResult.prev = page - 1;
+      paginationRuslt.prev = page - 1;
     }
 
-    this.paginationResult = paginationResult;
+    this.paginationRuslt = paginationRuslt;
     return this;
   }
 }
