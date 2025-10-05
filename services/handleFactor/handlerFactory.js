@@ -67,13 +67,11 @@ const getAllData = (model, modelName, localizedModel) =>
     }
 
     //build query
-    const countDocuments = await model.countDocuments(filter);
     const apiFeatures = new ApiFeatures(model.find(filter), req.query)
-      .pagination(countDocuments)
       .filter()
       .search()
       .limitfields()
-      .sort();
+      .sort().pagination(await model.countDocuments(filter));
 
     // Execute query
     const { mongooseQuery, paginationRuslt } = apiFeatures;
