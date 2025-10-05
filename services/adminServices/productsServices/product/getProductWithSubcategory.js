@@ -69,7 +69,7 @@ exports.getAllProductsBelongsTosubCategory = asyncHandler(
     const langHeaders = req.headers["lang"] || "en";
 
     // Check Redis cache first
-    const cacheKey = `${categoryId}-${JSON.stringify(req.headers["lang"] || "en")}55`;
+    const cacheKey = `${categoryId}-${JSON.stringify(req.headers["lang"] || "en")}5555`;
 
     const cachedData = await redis.get(cacheKey);
     if (cachedData) {
@@ -121,7 +121,9 @@ exports.getAllProductsBelongsTosubCategory = asyncHandler(
       data: productsBySubCategory,
     };
 
-    await redis.set(cacheKey, JSON.stringify(response), { EX: 86400 });
+
+    //TODO change EX to 86400
+    await redis.set(cacheKey, JSON.stringify(response), { EX: 2 });
 
     res.status(200).json(response);
   }
