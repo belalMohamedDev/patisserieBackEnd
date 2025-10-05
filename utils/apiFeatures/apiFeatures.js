@@ -96,6 +96,7 @@ class ApiFeatures {
   }
 
   pagination(countDocuments) {
+    if(this.queryString.page != -1) {
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 15;
     const skip = (page - 1) * limit;
@@ -117,8 +118,15 @@ class ApiFeatures {
     }
 
     this.paginationRuslt = paginationRuslt;
-    return this;
+    
+  }else{
+    this.paginationRuslt = {
+      currentPage: -1,
+      limit: countDocuments,
+      numberOfPages: 1,
+    };
   }
-}
+  return this;
+}}
 
 module.exports = ApiFeatures;
