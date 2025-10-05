@@ -57,7 +57,9 @@ const getAllData = (model, modelName, localizedModel) =>
     }
 
     // Check Redis cache first
-   const cacheKey = `${modelName}-${JSON.stringify(req.headers["lang"] || "en")}${req.query.active}-${req.query.endDateCheck}-${req.query.limit}-1${req.query.page}-${req.query.sort}-${req.query.fields}-${req.query.keyword}-${req.query.price}`;
+   const cacheKey = `${modelName}-${JSON.stringify(req.headers["lang"] || "en")}${req.query.active}-${req.query.endDateCheck}-${req.query.limit}-${req.query.page}-${req.query.sort}-${req.query.fields}-${req.query.keyword}-${req.query.price}`;
+
+   console.log("cacheKey", cacheKey);
 
     if (!localizedModel) {
       const cachedData = await redis.get(cacheKey);
