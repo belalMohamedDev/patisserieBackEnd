@@ -15,9 +15,7 @@ const {
 
 const {
   orderUpdate,
-  passingOrderApprovedToReqBody,
-
-  passingOrderTransitToReqBody, getAllAdminOrder,getOrderStats
+  getAllAdminOrder, getOrderStats
 } = require("../services/adminServices/adminOrder/adminOrder");
 
 const {
@@ -37,10 +35,9 @@ router.use(authServices.protect);
 
 
 router
-  .route("/:id/approveByAdmin")
+  .route("/admin/:id")
   .put(
     authServices.allowedTo("admin"),
-    passingOrderApprovedToReqBody,
     orderUpdate
   );
 
@@ -54,7 +51,7 @@ router
   );
 
 
-router.route("/:id/transit").put(passingOrderTransitToReqBody, orderUpdate);
+
 
 
 
