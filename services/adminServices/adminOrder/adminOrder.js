@@ -48,6 +48,11 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
           { $count: "count" }
         ],
 
+         pendingOrders: [
+          { $match: { status: 1 } },
+          { $count: "count" }
+        ],
+
         completeOrders: [
           { $match: { status: 4 } },
           { $count: "count" }
@@ -80,6 +85,7 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
     {
       $project: {
         newOrders: { $arrayElemAt: ["$newOrders.count", 0] },
+        pendingOrders: { $arrayElemAt: ["$pendingOrders.count", 0] },
         completeOrders: { $arrayElemAt: ["$completeOrders.count", 0] },
         cancelledOrders: { $arrayElemAt: ["$cancelledOrders.count", 0] },
         totalSalesToday: { $ifNull: [{ $arrayElemAt: ["$totalSalesToday.total", 0] }, 0] }
