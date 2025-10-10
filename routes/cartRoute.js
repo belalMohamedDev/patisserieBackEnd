@@ -134,6 +134,9 @@ const router = express.Router();
  *   description: Shopping cart management API
  */
 
+
+router.route("/").post(authServices.protect,authServices.allowedTo("user", "admin"),addProductToCart)
+
 router.use(authServices.protect, authServices.allowedTo("user"));
 
 /**
@@ -224,7 +227,7 @@ router.route("/clearAllItems").delete(clearLoggedUserCartItem);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.route("/").post(authServices.allowedTo("user", "admin"),addProductToCart).get(getLoggedUserCart);
+router.route("/").get(getLoggedUserCart);
 
 /**
  * @swagger
