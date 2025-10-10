@@ -224,7 +224,7 @@ router.route("/clearAllItems").delete(clearLoggedUserCartItem);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.route("/").post(addProductToCart).get(getLoggedUserCart);
+router.route("/").post(authServices.allowedTo("user"||"admin"),addProductToCart).get(getLoggedUserCart);
 
 /**
  * @swagger
