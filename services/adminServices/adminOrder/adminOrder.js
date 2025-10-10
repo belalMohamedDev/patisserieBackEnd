@@ -35,20 +35,26 @@ exports.getAllAdminOrder = factory.getAllData(orderModel, 'orders', orderModel);
 
 
 
-// //  @dec  get order status number and sales today
-// //  @route  Get /api/v1/orders/admin/status
-// //  @access private/admin
+// @desc  Get order status number, sales today, weekly sales & sold items
+// @route  GET /api/v1/orders/admin/status
+// @access private/admin
 exports.getOrderStats = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const startOfToday = new Date(now.setHours(0, 0, 0, 0));
+  const endOfToday = new Date(now.setHours(23, 59, 59, 999));
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
   const result = await orderModel.aggregate([
     {
       $facet: {
-
         newOrders: [
           { $match: { status: 0 } },
           { $count: "count" }
         ],
 
-         pendingOrders: [
+        pendingOrders: [
           { $match: { status: 1 } },
           { $count: "count" }
         ],
@@ -66,11 +72,8 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
         totalSalesToday: [
           {
             $match: {
-               status: 4,
-              createdAt: {
-                $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-                $lt: new Date(new Date().setHours(23, 59, 59, 999))
-              }
+              status: 4,
+              createdAt: { $gte: startOfToday, $lt: endOfToday }
             }
           },
           {
@@ -79,26 +82,57 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
               total: { $sum: "$totalOrderPrice" }
             }
           }
+        ],
+
+        totalSalesLastWeek: [
+          {
+            $match: {
+              status: 4,
+              createdAt: { $gte: sevenDaysAgo, $lt: endOfToday }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: "$totalOrderPrice" }
+            }
+          }
+        ],
+
+        totalItemsSoldLastWeek: [
+          {
+            $match: {
+              status: 4,
+              createdAt: { $gte: sevenDaysAgo, $lt: endOfToday }
+            }
+          },
+          { $unwind: "$cartItems" },
+          {
+            $group: {
+              _id: null,
+              totalItems: { $sum: "$cartItems.quantity" }
+            }
+          }
         ]
       }
     },
     {
       $project: {
-        newOrders: { $arrayElemAt: ["$newOrders.count", 0] },
-        pendingOrders: { $arrayElemAt: ["$pendingOrders.count", 0] },
-        completeOrders: { $arrayElemAt: ["$completeOrders.count", 0] },
-        cancelledOrders: { $arrayElemAt: ["$cancelledOrders.count", 0] },
-        totalSalesToday: { $ifNull: [{ $arrayElemAt: ["$totalSalesToday.total", 0] }, 0] }
+        newOrders: { $ifNull: [{ $arrayElemAt: ["$newOrders.count", 0] }, 0] },
+        pendingOrders: { $ifNull: [{ $arrayElemAt: ["$pendingOrders.count", 0] }, 0] },
+        completeOrders: { $ifNull: [{ $arrayElemAt: ["$completeOrders.count", 0] }, 0] },
+        cancelledOrders: { $ifNull: [{ $arrayElemAt: ["$cancelledOrders.count", 0] }, 0] },
+        totalSalesToday: { $ifNull: [{ $arrayElemAt: ["$totalSalesToday.total", 0] }, 0] },
+        totalSalesLastWeek: { $ifNull: [{ $arrayElemAt: ["$totalSalesLastWeek.total", 0] }, 0] },
+        totalItemsSoldLastWeek: { $ifNull: [{ $arrayElemAt: ["$totalItemsSoldLastWeek.totalItems", 0] }, 0] }
       }
     }
   ]);
 
-
-  //send success response
   res.status(200).json({
     status: true,
-    message: "Success to get order status",
-    data: result,
+    message: "Success to get order statistics",
+    data: result[0],
   });
 });
 
