@@ -64,6 +64,9 @@ router
   .route("/admin/status")
   .get(authServices.allowedTo("admin"), getOrderStats);
 
+
+router.route("/").post(authServices.allowedTo("user","admin"),createCashOrderValidator, createCashOrder);
+
 //user
 router.use(authServices.allowedTo("user"));
 
