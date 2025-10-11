@@ -14,7 +14,10 @@ const { addSessionToDB } = require("./addSessionToDB");
 // @ access Public
 exports.login = asyncHandler(async (req, res, next) => {
   //check if user exist & check if password is correct
-  const document = await userModel.findOne({ email: req.body.email });
+  const document = await userModel.findOne({ email: req.body.email }).populate({
+    path: "storeAddress",
+    select: "location region briefness BranchArea", 
+  });
   if (
     !document ||
     !(await bcrypt.compare(req.body.password, document.password))
