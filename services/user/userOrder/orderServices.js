@@ -20,7 +20,9 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   }
 
   // 2) Create order with default payment method type 'cash'
-  let order = await OrderModel.create({
+
+
+  const orderData = {
     user: req.userModel._id,
     notes: req.body.notes,
     cartItems: cart.cartItems,
@@ -30,7 +32,18 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     shippingAddress: req.body.shippingAddress,
     nearbyStoreAddress: req.body.nearbyStoreAddress,
     orderRegion: req.body.orderRegion,
-  });
+  };
+
+  if (req.userModel.role == "admin") {
+    orderData.status = 1;
+    orderData.adminAcceptedAt = new Date();
+  }
+
+
+
+  let order = await OrderModel.create(
+    orderData
+  );
 
   // 3) Localize order if created successfully
   if (order) {
