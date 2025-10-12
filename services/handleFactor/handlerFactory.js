@@ -57,16 +57,16 @@ const getAllData = (model, modelName, localizedModel) =>
     }
 
     // Check Redis cache first
-   const cacheKey = `${modelName}-${JSON.stringify(req.headers["lang"] || "en")}${req.query.active}-${req.query.endDateCheck}-${req.query.limit}-${req.query.page}-${req.query.sort}-${req.query.fields}-${req.query.keyword}-${req.query.price}`;
+   // const cacheKey = `${modelName}-${JSON.stringify(req.headers["lang"] || "en")}${req.query.active}-${req.query.endDateCheck}-${req.query.limit}-${req.query.page}-${req.query.sort}-${req.query.fields}-${req.query.keyword}-${req.query.price}`;
 
-   console.log("cacheKey", cacheKey);
+  
 
-    if (!localizedModel) {
-      const cachedData = await redis.get(cacheKey);
-      if (cachedData) {
-        return res.status(200).json(JSON.parse(cachedData));
-      }
-    }
+    // if (!localizedModel) {
+    //   const cachedData = await redis.get(cacheKey);
+    //   if (cachedData) {
+    //     return res.status(200).json(JSON.parse(cachedData));
+    //   }
+    // }
 
 
     const countDocuments = await model.countDocuments(filter);
@@ -103,16 +103,16 @@ const getAllData = (model, modelName, localizedModel) =>
     }
 
     // Cache the response for one day (86400 seconds)
-    await redis.set(
-      cacheKey,
-      JSON.stringify({
-        status: true,
-        message: i18n.__("SuccessToGetAllDataFor") + i18n.__(modelName),
-        paginationRuslt,
-        data: localizedDocument,
-      }),
-      { EX: 60 }
-    );
+    // await redis.set(
+    //   cacheKey,
+    //   JSON.stringify({
+    //     status: true,
+    //     message: i18n.__("SuccessToGetAllDataFor") + i18n.__(modelName),
+    //     paginationRuslt,
+    //     data: localizedDocument,
+    //   }),
+    //   { EX: 60 }
+    // );
 
     // send success response with data
     res.status(200).json({
