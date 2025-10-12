@@ -4,57 +4,51 @@ class ApiFeatures {
     this.queryString = queryString;
   }
 
+  // 🧩 Filter
   filter() {
     const queryObj = { ...this.queryString };
     const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
     excludesFields.forEach((field) => delete queryObj[field]);
 
-    // Apply filtering for price range
+    // 🎯 Price Range Filtering (price=10-50)
     if (this.queryString.price) {
-      const priceRange = this.queryString.price.split("-").map(Number);
-      queryObj.price = { $gte: priceRange[0], $lte: priceRange[1] };
+      const [min, max] = this.queryString.price.split("-").map(Number);
+      queryObj.price = { $gte: min || 0, $lte: max || Number.MAX_SAFE_INTEGER };
     }
 
+    // 🎯 Active Filter
     if (this.queryString.active !== undefined) {
-      queryObj.active = this.queryString.active === "true" ? true : false;
+      queryObj.active = this.queryString.active === "true";
     }
 
-    // Apply date range filtering
-
+    // 🎯 Date Filtering (endDate=true → only upcoming)
     if (this.queryString.endDate === "true") {
-      const now = new Date();
-      queryObj.endDate = { $gte: now };
+      queryObj.endDate = { $gte: new Date() };
     }
 
-    // Apply filtration using [gte, gt, lte, lt]
-    // No need to stringify and replace. You can directly use the query object
-    const queryStr = queryObj;
-
-    // Directly pass the query object to Mongoose without string manipulation
-    this.mongooseQuery = this.mongooseQuery.find(queryStr);
+    // ✅ Apply filters
+    this.mongooseQuery = this.mongooseQuery.find(queryObj);
 
     return this;
   }
 
+  // 🔽 Sort
   sort() {
-    if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(",").join(" ");
-      this.mongooseQuery = this.mongooseQuery.sort(sortBy);
-    } else {
-      // Default sort by created date
-      this.mongooseQuery = this.mongooseQuery.sort("-createdAt");
-    }
+    const sortBy = this.queryString.sort
+      ? this.queryString.sort.split(",").join(" ")
+      : "-createdAt _id"; // ✅ ثابت حتى لا تتكرر النتائج
+    this.mongooseQuery = this.mongooseQuery.sort(sortBy);
     return this;
   }
 
+  // 🎚 Limit number of results
   dataLimit() {
-    const limit = this.queryString.limit * 1 || null;
-
-    this.mongooseQuery = this.mongooseQuery.limit(limit);
-
+    const limit = Number(this.queryString.limit) || 0;
+    if (limit > 0) this.mongooseQuery = this.mongooseQuery.limit(limit);
     return this;
   }
 
+  // ✂️ Limit fields
   limitfields() {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(",").join(" ");
@@ -65,68 +59,62 @@ class ApiFeatures {
     return this;
   }
 
+  // 🔍 Search
   search(modelName) {
     if (this.queryString.keyword) {
+      const keyword = this.queryString.keyword.trim();
       const queryKeyword = {};
+
       if (modelName === "product") {
         queryKeyword.$or = [
-          { "title.en": { $regex: this.queryString.keyword, $options: "i" } },
-          { "title.ar": { $regex: this.queryString.keyword, $options: "i" } },
-          {
-            "description.en": {
-              $regex: this.queryString.keyword,
-              $options: "i",
-            },
-          },
-          {
-            "description.ar": {
-              $regex: this.queryString.keyword,
-              $options: "i",
-            },
-          },
+          { "title.en": { $regex: keyword, $options: "i" } },
+          { "title.ar": { $regex: keyword, $options: "i" } },
+          { "description.en": { $regex: keyword, $options: "i" } },
+          { "description.ar": { $regex: keyword, $options: "i" } },
         ];
       } else {
         queryKeyword.$or = [
-          { name: { $regex: this.queryString.keyword, $options: "i" } },
+          { name: { $regex: keyword, $options: "i" } },
         ];
       }
+
       this.mongooseQuery = this.mongooseQuery.find(queryKeyword);
     }
     return this;
   }
 
+  // 📄 Pagination
   pagination(countDocuments) {
-    if(this.queryString.page != -1) {
-    const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 15;
-    const skip = (page - 1) * limit;
+    // 🟡 -1 = إلغاء الباجينيشن وجلب الكل
+    if (this.queryString.page != -1) {
+      const page = Math.max(1, Number(this.queryString.page) || 1);
+      const limit = Math.max(1, Number(this.queryString.limit) || 15);
+      const skip = (page - 1) * limit;
 
-    this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
+      this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
 
-    const paginationRuslt = {
-      currentPage: page,
-      limit,
-      numberOfPages: Math.ceil(countDocuments / limit),
-    };
+      const paginationResult = {
+        currentPage: page,
+        limit,
+        numberOfPages: Math.ceil(countDocuments / limit),
+      };
 
-    if (skip + limit < countDocuments) {
-      paginationRuslt.next = page + 1;
+      if (skip + limit < countDocuments) paginationResult.next = page + 1;
+      if (skip > 0) paginationResult.prev = page - 1;
+
+      this.paginationResult = paginationResult;
+
+ 
+    } else {
+      this.paginationResult = {
+        currentPage: -1,
+        limit: countDocuments,
+        numberOfPages: 1,
+      };
     }
 
-    if (skip > 0) {
-      paginationRuslt.prev = page - 1;
-    }
-
-    this.paginationRuslt = paginationRuslt;
-    
-  }else{
-    this.paginationRuslt = {
-      currentPage: -1,
-      limit: countDocuments,
-      numberOfPages: 1,
-    };
+    return this;
   }
-  return this;
-}}
+}
 
 module.exports = ApiFeatures;
