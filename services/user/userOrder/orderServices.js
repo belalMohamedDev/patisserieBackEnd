@@ -47,9 +47,8 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     totalOrderPrice: cart.totalOrderPrice,
     shippingAddress: req.body.shippingAddress,
     nearbyStoreAddress,
-    orderSource: isAdmin
-      ? (req.body.orderSource || "instore")
-      : (req.body.orderSource || "app"),
+    orderSource: req.body.orderSource
+ 
 
   };
 
