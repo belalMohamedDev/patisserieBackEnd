@@ -28,7 +28,10 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   const isAdmin = req.userModel.role === "admin";
 
 
-
+  let nearbyStoreAddress = req.body.nearbyStoreAddress;
+  if (isAdmin && !nearbyStoreAddress) {
+    nearbyStoreAddress = req.userModel.nearbyStoreAddress || null;
+  }
   // 2) Create order with default payment method type 'cash'
 
 
@@ -40,8 +43,9 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     shippingPrice: cart.shippingPrice,
     totalOrderPrice: cart.totalOrderPrice,
     shippingAddress: req.body.shippingAddress,
-    nearbyStoreAddress: isAdmin ? req.userModel.nearbyStoreAddress : req.body.nearbyStoreAddress,
-    orderSource: req.body.orderSource ?? (isAdmin ? "instore" : "app"),
+    nearbyStoreAddress,
+    orderSource: req.body.orderSource || (isAdmin ? "instore" : "app"),
+
   };
 
 
@@ -67,7 +71,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   // 3) Localize order if created successfully
   if (order) {
     order = await OrderModel.findById(order._id);
-    
+
     const localizedDocument = productModel.schema.methods.toJSONLocalizedOnly(
       order,
       req.headers["lang"] || "en"
