@@ -29,10 +29,11 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
 
   let nearbyStoreAddress = req.body.nearbyStoreAddress;
   if (isAdmin && !nearbyStoreAddress) {
-    if (!req.userModel.nearbyStoreAddress) {
+  
+    if (!req.userModel.storeAddress) {
       return next(new ApiError(i18n.__("adminMustHaveBranch"), 400));
     }
-    nearbyStoreAddress = req.userModel.nearbyStoreAddress;
+    nearbyStoreAddress = req.userModel.storeAddress._id;
   }
 
 
