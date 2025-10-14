@@ -168,5 +168,7 @@
 	"thisAccountIsNotYetActive": "هذا الحساب غير مفعل بعد. يرجى الانتظار حتى يقوم المسؤول بتفعيل حسابك.",
 	"deliveredOrder": "طلبات المستلمة",
 	"admin": "ادمن",
-	"orders": "orders"
+	"orders": "الطلبات",
+    "adminMustHaveBranch": "يجب ربط حساب المشرف بأحد الفروع قبل إنشاء الطلب."
+
 }

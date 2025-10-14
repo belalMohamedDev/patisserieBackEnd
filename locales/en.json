@@ -168,5 +168,7 @@
 	"DriverLocationRequired": "Driver location is required",
 	"deliveredOrder": "delivered order",
 	"admin": "admin",
-	"orders": "orders"
+	"orders": "orders",
+	"adminMustHaveBranch": "Admin must be associated with a store branch before creating an order."
+
 }

@@ -19,7 +19,6 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   const cart = await CartModel.findOne({ user: req.userModel._id });
 
 
-
   if (!cart || cart.cartItems.length === 0) {
     return next(new ApiError(i18n.__("cartNotFound"), 404));
   }
@@ -30,11 +29,14 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
 
   let nearbyStoreAddress = req.body.nearbyStoreAddress;
   if (isAdmin && !nearbyStoreAddress) {
-    nearbyStoreAddress = req.userModel.nearbyStoreAddress || null;
+    if (!req.userModel.nearbyStoreAddress) {
+      return next(new ApiError(i18n.__("adminMustHaveBranch"), 400));
+    }
+    nearbyStoreAddress = req.userModel.nearbyStoreAddress;
   }
+
+
   // 2) Create order with default payment method type 'cash'
-
-
   const orderData = {
     user: req.userModel._id,
     notes: req.body.notes,
@@ -44,7 +46,9 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     totalOrderPrice: cart.totalOrderPrice,
     shippingAddress: req.body.shippingAddress,
     nearbyStoreAddress,
-    orderSource: req.body.orderSource || (isAdmin ? "instore" : "app"),
+    orderSource: isAdmin
+      ? (req.body.orderSource || "instore")
+      : (req.body.orderSource || "app"),
 
   };
 
