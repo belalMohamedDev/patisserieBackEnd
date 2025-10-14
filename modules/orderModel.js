@@ -59,6 +59,24 @@ const OrderSchema = mongoose.Schema(
       ref: "StoreAddress",
     },
 
+
+     deliveryType: {
+      type: String,
+      enum: ["delivery", "pickup"],
+      default: "delivery",
+    },
+
+    orderSource: {
+      type: String,
+      enum: ["app", "phone", "in_store"],
+      default: "app",
+    },
+
+
+    customerName: { type: String, trim: true },
+    customerPhone: { type: String, trim: true },
+    customerAddressText: { type: String, trim: true },
+
     totalOrderPrice: {
       type: Number,
     },

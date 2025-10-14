@@ -12,12 +12,22 @@ const ApiError = require("../../../utils/apiError/apiError");
 //  @route   POST /api/v1/orders/:cartId
 //  @access  Protected (user)
 exports.createCashOrder = asyncHandler(async (req, res, next) => {
+
+
+
   // 1) Get cart based on user
   const cart = await CartModel.findOne({ user: req.userModel._id });
+
+
 
   if (!cart || cart.cartItems.length === 0) {
     return next(new ApiError(i18n.__("cartNotFound"), 404));
   }
+
+
+  const isAdmin = req.userModel.role === "admin";
+
+
 
   // 2) Create order with default payment method type 'cash'
 
@@ -30,15 +40,24 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     shippingPrice: cart.shippingPrice,
     totalOrderPrice: cart.totalOrderPrice,
     shippingAddress: req.body.shippingAddress,
-    nearbyStoreAddress: req.body.nearbyStoreAddress,
-    orderRegion: req.body.orderRegion,
+    nearbyStoreAddress: isAdmin ? req.userModel.nearbyStoreAddress : req.body.nearbyStoreAddress,
+    orderSource: req.body.orderSource ?? (isAdmin ? "instore" : "app"),
   };
 
-  if (req.userModel.role == "admin") {
+
+  // If the user is admin, set the order status to 'accepted' (1) and record the acceptance time
+  // Also, if the order source is 'phone', capture additional customer details
+  if (isAdmin) {
     orderData.status = 1;
     orderData.adminAcceptedAt = new Date();
-  }
 
+    if (req.body.orderSource === "phone") {
+      orderData.customerName = req.body.customerName;
+      orderData.customerPhone = req.body.customerPhone;
+      orderData.customerAddressText = req.body.customerAddressText;
+    }
+
+  }
 
 
   let order = await OrderModel.create(
@@ -48,7 +67,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   // 3) Localize order if created successfully
   if (order) {
     order = await OrderModel.findById(order._id);
-
+    
     const localizedDocument = productModel.schema.methods.toJSONLocalizedOnly(
       order,
       req.headers["lang"] || "en"
