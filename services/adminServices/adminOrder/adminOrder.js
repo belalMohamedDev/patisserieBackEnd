@@ -59,6 +59,29 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
           { $count: "count" }
         ],
 
+
+
+
+
+        pendingDriver: [
+          { $match: { status: 2 } },
+          { $count: "count" }
+        ],
+
+
+
+
+        DeliveredOrders: [
+          { $match: { status: 3 } },
+          { $count: "count" }
+        ],
+
+
+
+
+
+
+
         completeOrders: [
           { $match: { status: 4 } },
           { $count: "count" }
@@ -113,6 +136,22 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
               totalItems: { $sum: "$cartItems.quantity" }
             }
           }
+        ],
+
+        topProducts: [
+          {
+            $match: {
+              status: 4,
+              createdAt: { $gte: sevenDaysAgo, $lt: endOfToday }
+            }
+          },
+          { $unwind: "$cartItems" },
+          {
+            $group: {
+              _id: "$cartItems.productId"
+            }
+          },
+          { $count: "count" }
         ]
       }
     },
@@ -120,11 +159,14 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
       $project: {
         newOrders: { $ifNull: [{ $arrayElemAt: ["$newOrders.count", 0] }, 0] },
         pendingOrders: { $ifNull: [{ $arrayElemAt: ["$pendingOrders.count", 0] }, 0] },
+        pendingDriver: { $ifNull: [{ $arrayElemAt: ["$pendingDriver.count", 0] }, 0] },
+        DeliveredOrders: { $ifNull: [{ $arrayElemAt: ["$DeliveredOrders.count", 0] }, 0] },
         completeOrders: { $ifNull: [{ $arrayElemAt: ["$completeOrders.count", 0] }, 0] },
         cancelledOrders: { $ifNull: [{ $arrayElemAt: ["$cancelledOrders.count", 0] }, 0] },
         totalSalesToday: { $ifNull: [{ $arrayElemAt: ["$totalSalesToday.total", 0] }, 0] },
         totalSalesLastWeek: { $ifNull: [{ $arrayElemAt: ["$totalSalesLastWeek.total", 0] }, 0] },
-        totalItemsSoldLastWeek: { $ifNull: [{ $arrayElemAt: ["$totalItemsSoldLastWeek.totalItems", 0] }, 0] }
+        totalItemsSoldLastWeek: { $ifNull: [{ $arrayElemAt: ["$totalItemsSoldLastWeek.totalItems", 0] }, 0] },
+        topProducts: { $ifNull: [{ $arrayElemAt: ["$topProducts.count", 0] }, 0] }
       }
     }
   ]);
