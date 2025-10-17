@@ -34,9 +34,9 @@ const OrderSchema = mongoose.Schema(
 
     adminCompletedAt: Date,
     driverAcceptedAt: Date,
+    driverDeliveredAt: Date,
     canceledAt: Date,
 
-    paitAt: Date,
 
     cartItems: [cartItemSchema],
 
@@ -93,11 +93,8 @@ const OrderSchema = mongoose.Schema(
       },
     ],
 
-    isPaid: {
-      type: Boolean,
-      default: false,
-    },
-    paitAt: Date,
+   
+ 
   },
   { timestamps: true }
 );
