@@ -63,6 +63,10 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
       orderData.customerName = req.body.customerName;
       orderData.customerPhone = req.body.customerPhone;
       orderData.customerAddressText = req.body.customerAddressText;
+    }else if (req.body.orderSource === "in_store") {
+      orderData.totalOrderPrice =cart.totalOrderPrice - cart.shippingPrice- cart.taxPrice;
+      orderData.taxPrice = 0;
+      orderData.shippingPrice = 0;
     }
 
   }

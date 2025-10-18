@@ -106,6 +106,15 @@ const OrderSchema = mongoose.Schema(
 // ===================== Counter Logic =====================
 OrderSchema.pre("save", async function (next) {
   const doc = this;
+
+ if (doc.orderSource === "in_store") {
+    doc.taxPrice = 0;
+    doc.shippingPrice = 0;
+  }
+
+
+
+
   if (doc.isNew) {
     let counter = await Counter.findOne({ name: "dailyOrderNumber" });
 
