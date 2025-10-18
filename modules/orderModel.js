@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 var mongooseI18n = require("mongoose-i18n-localize");
-
+const Counter = require("./counterModel");
 // Define the CartItem schema
 
 const cartItemSchema = mongoose.Schema({
@@ -12,6 +12,8 @@ const cartItemSchema = mongoose.Schema({
 
 const OrderSchema = mongoose.Schema(
   {
+     orderNumber: { type: Number },
+
     user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
@@ -98,6 +100,44 @@ const OrderSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+
+
+// ===================== Counter Logic =====================
+OrderSchema.pre("save", async function (next) {
+  const doc = this;
+  if (doc.isNew) {
+    let counter = await Counter.findOne({ name: "dailyOrderNumber" });
+
+  
+    if (!counter) {
+      counter = await Counter.create({ name: "dailyOrderNumber", value: 0 });
+    }
+
+ 
+    const now = new Date();
+    const lastReset = counter.lastReset || new Date(0);
+
+    const sameDay =
+      now.getFullYear() === lastReset.getFullYear() &&
+      now.getMonth() === lastReset.getMonth() &&
+      now.getDate() === lastReset.getDate();
+
+    if (!sameDay) {
+      counter.value = 0;
+      counter.lastReset = now;
+    }
+
+    counter.value += 1;
+    await counter.save();
+
+    doc.orderNumber = counter.value;
+  }
+  next();
+});
+
+
+
 
 
 //========= Pre hook (populate) =========
