@@ -13,7 +13,7 @@ exports.getAllDriver = asyncHandler(async (req, res) => {
     role: "delivery",
     // driverActive: false,
     // completeData: true,
-  });
+  }).sort({ driverActive: true, completeData: true });
 
   //send success response
   res.status(200).json({
