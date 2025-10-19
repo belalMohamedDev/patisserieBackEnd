@@ -3,14 +3,16 @@ const asyncHandler = require("express-async-handler");
 const i18n = require("i18n");
 const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
 
+
+
 // @desc Get all inactive user drivers
 // @route GET /api/v1/driver/allDriverNotActive
 // @access Private to admin
-exports.getAllNotActiveUserDriver = asyncHandler(async (req, res) => {
+exports.getAllDriver = asyncHandler(async (req, res) => {
   const document = await userModel.find({
     role: "delivery",
-    driverActive: false,
-    completeData: true,
+    // driverActive: false,
+    // completeData: true,
   });
 
   //send success response

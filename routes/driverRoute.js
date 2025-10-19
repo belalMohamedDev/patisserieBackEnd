@@ -27,8 +27,8 @@ const {
 
 const {
   activeDriverAccount,
-  getAllNotActiveUserDriver,
-  getAllActiveUserDriver,
+ 
+  getAllActiveUserDriver,getAllDriver
 } = require("../services/adminServices/approveDriver/adminApprove");
 
 const authServices = require("../services/authServices/protect");
@@ -292,7 +292,7 @@ router
   .get(
     authServices.protect,
     authServices.allowedTo("admin"),
-    getAllNotActiveUserDriver
+    getAllDriver
   );
 
 /**
