@@ -288,7 +288,7 @@ const router = express.Router();
  *               $ref: '#/components/schemas/Error'
  */
 router
-  .route("/allDriverNotActive")
+  .route("/allDriver")
   .get(
     authServices.protect,
     authServices.allowedTo("admin"),
