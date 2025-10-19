@@ -11,14 +11,23 @@ const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
 exports.getAllDriver = asyncHandler(async (req, res) => {
   const document = await userModel.find({
     role: "delivery",
-    // driverActive: false,
-    // completeData: true,
-  }).sort({    driverActive: -1, 
-      completeData: -1, });
+
+  }).sort({
+    driverActive: -1,
+    completeData: -1,
+  });
+
+
+  const totalDrivers = document.length;
+  const activeDrivers = document.filter((d) => d.driverActive === true).length;
+  const inactiveDrivers = document.filter((d) => d.driverActive === false).length;
 
   //send success response
   res.status(200).json({
     status: true,
+    total: totalDrivers,
+    active: activeDrivers,
+    inactive: inactiveDrivers,
     message: i18n.__("SuccessToGetAllDataFor") + i18n.__("driver"),
     data: sanitizeUser(document),
   });
