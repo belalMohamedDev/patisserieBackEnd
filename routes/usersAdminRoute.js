@@ -15,6 +15,6 @@ router.use(authServices.protect, authServices.allowedTo("admin"));
 router.route("/data").get(getAllAdmin);
 
 
-router.route("/inActive").get(getInActiveAdmin);
+router.route("/inActive").get(getAllAdmin);
 
 module.exports = router;
