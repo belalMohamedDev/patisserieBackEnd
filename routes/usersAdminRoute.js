@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(authServices.protect, authServices.allowedTo("admin"));
 
 
-router.route("/").get(getAllAdmin);
+router.route("/data").get(getAllAdmin);
 
 
 router.route("/inActive").get(getInActiveAdmin);
