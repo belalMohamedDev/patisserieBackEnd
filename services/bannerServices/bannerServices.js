@@ -16,6 +16,7 @@ exports.uploadImageInCloud = uploadToCloudinary("banner");
 // @ dec delete photo from cloud using when update
 exports.deleteImageBeforeUpdate = factory.deletePhotoFromCloud(bannerModel);
 
+
 //  @dec    create Banner
 //  @route  Post  /api/v1/banner
 //  @access Private (admin )

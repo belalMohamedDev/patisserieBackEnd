@@ -6,14 +6,14 @@ const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
 // @desc Get all  user ADMINS
 // @route GET /api/v1/admin
 // @access Private to admin
-exports.getAllAdmin = asyncHandler(async (req, res) => {
+exports.getAllAdmin = asyncHandler(
+  async (req, res) => {
   const document = await userModel.find({
     role: "admin",
     // active: true,
   }).sort({
     active: -1,
   });
-
 
 
   const totalAdmins = document.length;
