@@ -1,7 +1,7 @@
 const express = require("express");
 const authServices = require("../services/authServices/protect");
 const {
-  getActiveAdmin,
+  getAllAdmin,
   getInActiveAdmin,
 } = require("../services/adminServices/userAdmins/adminServices");
 
@@ -141,7 +141,7 @@ router.use(authServices.protect, authServices.allowedTo("admin"));
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.route("/").get(getActiveAdmin);
+router.route("/").get(getAllAdmin);
 
 /**
  * @swagger
