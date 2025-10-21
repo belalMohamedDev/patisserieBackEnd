@@ -17,4 +17,5 @@ router.route("/data").get(getAllAdmin);
 
 router.route("/inActive").get(getAllAdmin);
 
+
 module.exports = router;
