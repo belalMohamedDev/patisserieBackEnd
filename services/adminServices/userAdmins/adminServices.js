@@ -12,7 +12,9 @@ exports.getAllAdmin = asyncHandler(
     role: "admin",
  
   }).sort({
+    completeData:-1,
     active: -1,
+
   }).populate({
     path: "storeAddress",
     select: "location region briefness BranchArea", 
