@@ -10,9 +10,12 @@ exports.getAllAdmin = asyncHandler(
   async (req, res) => {
   const document = await userModel.find({
     role: "admin",
-    // active: true,
+ 
   }).sort({
     active: -1,
+  }).populate({
+    path: "storeAddress",
+    select: "location region briefness BranchArea", 
   });
 
 
@@ -32,19 +35,4 @@ exports.getAllAdmin = asyncHandler(
 });
 
 
-// @desc Get all inactive user Admins
-// @route GET /api/v1/admin/inactive
-// @access Private to admin
-exports.getInActiveAdmin = asyncHandler(async (req, res) => {
-  const document = await userModel.find({
-    role: "admin",
-    active: false,
-  });
 
-  //send success response
-  res.status(200).json({
-    status: true,
-    message: i18n.__("SuccessToGetAllDataFor") + i18n.__("admin"),
-    data: sanitizeUser(document),
-  });
-});
