@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const i18n = require("i18n");
+const { v4: uuidv4 } = require("uuid");
+
 const ms = require("ms");
 const redisClient = require("../../config/redisConnection");
 

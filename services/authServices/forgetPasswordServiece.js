@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const crypto = require("crypto");
 const i18n = require("i18n");
+const { v4: uuidv4 } = require("uuid");
+
 const ms = require("ms");
 const ApiError = require("../../utils/apiError/apiError");
 const userModel = require("../../modules/userModel");

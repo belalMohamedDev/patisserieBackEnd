@@ -3,6 +3,7 @@ const userModel = require("../../../modules/userModel");
 const i18n = require("i18n");
 const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
 const ms = require("ms");
+const { v4: uuidv4 } = require("uuid");
 
 const redisClient = require("../../../config/redisConnection");
 const creatToken = require("../../../utils/generate token/createToken");
