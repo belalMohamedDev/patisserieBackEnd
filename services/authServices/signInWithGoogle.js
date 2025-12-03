@@ -40,18 +40,17 @@ exports.signInWithGoogle = asyncHandler(async (req, res, next) => {
     ms(process.env.JWT_EXPIER_REFRESH_TIME_TOKEN) / 1000,
   );
 
-  const refreshToken = createToken(
-    user._id,
-    process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
-    process.env.JWT_EXPIER_REFRESH_TIME_TOKEN
-  );
-
   const accessToken = createToken(
-    user._id,
+    { userId: document._id },
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
-    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN
+    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN,
   );
 
+  const refreshToken = createToken(
+    { userId: document._id, sessionId },
+    process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
+    process.env.JWT_EXPIER_REFRESH_TIME_TOKEN,
+  );
 
 
   await redisClient.set(

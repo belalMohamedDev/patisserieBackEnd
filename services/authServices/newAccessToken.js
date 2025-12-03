@@ -4,7 +4,7 @@ const i18n = require("i18n");
 const redisClient = require("../../config/redisConnection");
 
 const ApiError = require("../../utils/apiError/apiError");
-const creatToken = require("../../utils/generate token/createToken");
+const createToken = require("../../utils/generate token/createToken");
 
 // @ dec create new access token
 // @ route Post  /api/vi/auth/token
@@ -45,11 +45,14 @@ exports.newAccessToken = asyncHandler(async (req, res, next) => {
     return next(new ApiError(i18n.__("invalidOrExpiredRefreshToken"), 401));
   }
 
-  const accessToken = creatToken(
-    user._id,
+
+  const accessToken = createToken(
+    { userId: document._id },
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
-    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN
+    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN,
   );
+
+
 
 
   res.status(201).json({

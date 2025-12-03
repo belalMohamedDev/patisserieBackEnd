@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 const redisClient = require("../../../config/redisConnection");
 const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
 
-const creatToken = require("../../../utils/generate token/createToken");
+const createToken = require("../../../utils/generate token/createToken");
 
 // @ dec update logged user password
 // @ route Update  /api/vi/user/updateMyPassword
@@ -34,17 +34,17 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
     ms(process.env.JWT_EXPIER_REFRESH_TIME_TOKEN) / 1000,
   );
 
-  const accessToken = creatToken(
-    document._id,
+  const accessToken = createToken(
+    { userId: document._id },
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
-    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN
-  );
-  const refreshToken = creatToken(
-    document._id,
-    process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
-    process.env.JWT_EXPIER_REFRESH_TIME_TOKEN
+    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN,
   );
 
+  const refreshToken = createToken(
+    { userId: document._id, sessionId },
+    process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
+    process.env.JWT_EXPIER_REFRESH_TIME_TOKEN,
+  );
   await redisClient.set(
     `refreshToken:${document._id}:${sessionId}`,
     refreshToken,
