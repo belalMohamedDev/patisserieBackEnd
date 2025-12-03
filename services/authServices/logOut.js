@@ -1,26 +1,20 @@
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
-
 const i18n = require("i18n");
-
+const redisClient = require("../../config/redisConnection");
 const ApiError = require("../../utils/apiError/apiError");
-const userModel = require("../../modules/userModel");
 
 // @ dec log out
 // @ route Post  /api/vi/auth/logout
 // @ access Public
 
 exports.logOut = asyncHandler(async (req, res, next) => {
-  let refreshToken;
-  if (req.body.refreshToken) {
-    refreshToken = req.body.refreshToken;
-  } else if (req.cookies && req.cookies.refreshToken) {
-    refreshToken = req.cookies.refreshToken;
-  }
+  const { refreshToken } = req.body;
 
   if (!refreshToken) {
     return next(new ApiError(i18n.__("refreshTokenRequired"), 400));
   }
+
 
   let decoded;
   try {
@@ -32,25 +26,16 @@ exports.logOut = asyncHandler(async (req, res, next) => {
     return next(new ApiError(i18n.__("invalidRefreshToken"), 400));
   }
 
-  const user = await userModel.findOne({ _id: decoded.userId });
+  const { userId, sessionId } = decoded;
 
-  if (!user) {
+  const tokenKey = `refreshToken:${userId}:${sessionId}`;
+  const isExist = await redisClient.get(tokenKey);
+
+  if (!isExist) {
     return next(new ApiError(i18n.__("invalidRefreshToken"), 400));
   }
 
-  const sessionIndex = user.sessions.findIndex(
-    (session) => session.refreshToken === refreshToken
-  );
-
-  if (sessionIndex === -1) {
-    return next(new ApiError(i18n.__("invalidRefreshToken"), 400));
-  }
-
-  user.sessions.splice(sessionIndex, 1);
-  await user.save();
-
-  res.clearCookie("accessToken", { httpOnly: true, secure: true });
-  res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+  await redisClient.del(tokenKey);
 
   res.status(200).json({
     status: true,

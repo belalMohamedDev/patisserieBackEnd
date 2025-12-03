@@ -1,12 +1,15 @@
 const asyncHandler = require("express-async-handler");
 const crypto = require("crypto");
 const i18n = require("i18n");
+const ms = require("ms");
 const ApiError = require("../../utils/apiError/apiError");
 const userModel = require("../../modules/userModel");
 const sendEmail = require("../../utils/sendEmail/sendEmail");
 const creatToken = require("../../utils/generate token/createToken");
 const { sanitizeUser } = require("../../utils/apiFeatures/sanitizeData");
-const { getDeviceInfo } = require("../../utils/getDeviceInfo/getDeviceInfo");
+const redisClient = require("../../config/redisConnection");
+
+
 
 /////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -133,7 +136,6 @@ const verifyCode = asyncHandler(async (req, res, next) => {
 // @ route Post  /api/vi/auth/resetPassword
 // @ access Public
 const resetPassword = asyncHandler(async (req, res, next) => {
-  const deviceInfo = JSON.stringify(getDeviceInfo(req));
 
   //get user based on  email
   const document = await userModel.findOne({
@@ -155,9 +157,15 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   document.passwordRestExpire = undefined;
   document.passwordRestVerified = undefined;
 
-  // if everyThing is ok  generate token
+  await document.save();
 
-  //generate token
+  // if everyThing is ok  generate token
+  const sessionId = uuidv4();
+
+  const expireSeconds = Math.floor(
+    ms(process.env.JWT_EXPIER_REFRESH_TIME_TOKEN) / 1000,
+  );
+
   const accessToken = creatToken(
     document._id,
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
@@ -169,41 +177,20 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     process.env.JWT_EXPIER_REFRESH_TIME_TOKEN
   );
 
-  (document.sessions = {
+
+  await redisClient.set(
+    `refreshToken:${document._id}:${sessionId}`,
     refreshToken,
-    deviceInfo,
-    createdAt: new Date(),
-    lastUsedAt: new Date(),
-  }),
-    await document.save();
-
-  //cookies to we
-  const accessTokenMaxAge = parseTimeToMilliseconds(
-    process.env.JWT_EXPIER_ACCESS_TIME_TOKEN
-  );
-  const refreshTokenMaxAge = parseTimeToMilliseconds(
-    process.env.JWT_EXPIER_REFRESH_TIME_TOKEN
+    { EX: expireSeconds },
   );
 
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
-    maxAge: accessTokenMaxAge,
-  });
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
-    maxAge: refreshTokenMaxAge,
-  });
 
   //send success response to client side
   res.status(201).json({
     status: true,
     message: i18n.__("successfullyUpdatingPassword"),
     accessToken: accessToken,
-    data: sanitizeUser(document),
+    data: sanitizeUser(document, refreshToken),
   });
 });
 
@@ -213,17 +200,3 @@ module.exports = {
   resetPassword,
 };
 
-const parseTimeToMilliseconds = (time) => {
-  const unit = time.slice(-1); // m, d
-  const value = parseInt(time.slice(0, -1), 10);
-  switch (unit) {
-    case "m":
-      return value * 60 * 1000;
-    case "h":
-      return value * 60 * 60 * 1000;
-    case "d":
-      return value * 24 * 60 * 60 * 1000;
-    default:
-      throw new Error("Invalid time format");
-  }
-};
