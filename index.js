@@ -12,8 +12,8 @@ const morgan = require("morgan");
 const admin = require("firebase-admin");
 const i18n = require("i18n");
 const useragent = require("express-useragent");
-const swaggerUi = require("swagger-ui-express");
-const swaggerSpecs = require("./swagger");
+
+
 
 const dbConnection = require("./config/database");
 const redisClient = require("./config/redisConnection");
@@ -122,22 +122,6 @@ app.use("/api", limiter);
 //Mount Routes
 mountRoutes(app);
 
-// Swagger UI setup
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpecs, {
-    explorer: true,
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Elminiawy Patisserie API Documentation",
-  })
-);
-
-// Swagger JSON endpoint
-app.get("/swagger.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.send(swaggerSpecs);
-});
 
 //Route error middleware
 app.all("*", (req, res, next) => {

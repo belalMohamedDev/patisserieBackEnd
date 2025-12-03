@@ -2,8 +2,9 @@ const asyncHandler = require("express-async-handler");
 const userModel = require("../../../modules/userModel");
 const i18n = require("i18n");
 const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
-const { getDeviceInfo } = require("../../../utils/getDeviceInfo/getDeviceInfo");
+const ms = require("ms");
 
+const redisClient = require("../../../config/redisConnection");
 const creatToken = require("../../../utils/generate token/createToken");
 
 // @ dec update logged user email
@@ -21,9 +22,14 @@ exports.updateLoggedUserEmail = asyncHandler(async (req, res, next) => {
     }
   );
 
-  const deviceInfo = JSON.stringify(getDeviceInfo(req));
 
   //generate token
+  const sessionId = uuidv4();
+
+  const expireSeconds = Math.floor(
+    ms(process.env.JWT_EXPIER_REFRESH_TIME_TOKEN) / 1000,
+  );
+
   const accessToken = creatToken(
     document._id,
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
@@ -35,13 +41,13 @@ exports.updateLoggedUserEmail = asyncHandler(async (req, res, next) => {
     process.env.JWT_EXPIER_REFRESH_TIME_TOKEN
   );
 
-  (document.sessions = {
+  await redisClient.set(
+    `refreshToken:${document._id}:${sessionId}`,
     refreshToken,
-    deviceInfo,
-    createdAt: new Date(),
-    lastUsedAt: new Date(),
-  }),
-  document.save();
+    { EX: expireSeconds },
+  );
+
+
 
   res.status(200).json({
     status: true,
