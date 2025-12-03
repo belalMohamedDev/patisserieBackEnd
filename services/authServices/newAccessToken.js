@@ -47,11 +47,10 @@ exports.newAccessToken = asyncHandler(async (req, res, next) => {
 
 
   const accessToken = createToken(
-    { userId: document._id },
+    { userId: userId },
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
     process.env.JWT_EXPIER_ACCESS_TIME_TOKEN,
   );
-
 
 
 
