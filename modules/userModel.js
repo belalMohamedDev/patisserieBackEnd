@@ -2,6 +2,15 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 var mongooseI18n = require("mongoose-i18n-localize");
 
+const sessionSchema = new mongoose.Schema(
+  {
+    refreshToken: { type: String },
+    deviceInfo: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    lastUsedAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
 
 
 const userSchema = new mongoose.Schema(
@@ -76,6 +85,12 @@ const userSchema = new mongoose.Schema(
     ],
 
     verifyAccount: Boolean,
+
+    sessions: [sessionSchema],
+    branchAddress: {
+      type: mongoose.Schema.ObjectId,
+      ref: "StoreAddress",
+    },
 
     wishList: [
       {
