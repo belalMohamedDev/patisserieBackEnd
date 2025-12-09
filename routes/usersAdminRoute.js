@@ -22,7 +22,6 @@ router.use(authServices.protect, authServices.allowedTo("admin"));
 router.route("/").get(getAllAdmin).post(
   uploadProfileImage,
   resizeProfileImage,
-  signUpValidator,
   uploadImageInCloud,
   updateUserToAdmin
 );

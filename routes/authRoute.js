@@ -2,7 +2,7 @@ const express = require("express");
 const { login } = require("../services/authServices/loginServices");
 
 const {
-  signUp,
+  signUp
 
 } = require("../services/authServices/signUpServices");
 const { logOut } = require("../services/authServices/logOut");
