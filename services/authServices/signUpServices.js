@@ -11,18 +11,7 @@ const createToken = require("../../utils/generate token/createToken");
 
 const { sanitizeUser } = require("../../utils/apiFeatures/sanitizeData");
 
-const { uploadToCloudinary } = require("../../middleware/cloudinaryMiddleWare");
-const { uploadSingleImage } = require("../../middleware/imageUploadMiddleware");
-const { resizeImage } = require("../../middleware/resizeImage");
 
-//upload single image
-exports.uploadProfileImage = uploadSingleImage("image");
-
-// resize image before upload
-exports.resizeProfileImage = resizeImage();
-
-// upload image in cloud
-exports.uploadImageInCloud = uploadToCloudinary("driverProfile");
 
 // @ dec sign Up
 // @ route Post  /api/vi/auth/signUp
@@ -35,10 +24,7 @@ exports.signUp = asyncHandler(async (req, res, next) => {
     phone: req.body.phone,
     email: req.body.email,
     password: req.body.password,
-    role: req.body.role,
-    storeAddress: req.body.storeAddress,
-    image: req.body.image,
-    publicId: req.body.publicId,
+
   });
 
   //generate token
@@ -48,7 +34,7 @@ exports.signUp = asyncHandler(async (req, res, next) => {
   const expireSeconds = Math.floor(
     ms(process.env.JWT_EXPIER_REFRESH_TIME_TOKEN) / 1000,
   );
- const accessToken = createToken(
+  const accessToken = createToken(
     { userId: document._id },
     process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
     process.env.JWT_EXPIER_ACCESS_TIME_TOKEN,

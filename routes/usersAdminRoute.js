@@ -5,6 +5,13 @@ const {
 
 } = require("../services/adminServices/userAdmins/adminServices");
 
+
+const {
+  resizeProfileImage, updateUserToAdmin, uploadImageInCloud, uploadProfileImage
+
+} = require("../services/adminServices/userAdmins/addUserToAdmin");
+
+
 const router = express.Router();
 
 
@@ -12,7 +19,13 @@ const router = express.Router();
 router.use(authServices.protect, authServices.allowedTo("admin"));
 
 
-router.route("/").get(getAllAdmin);
+router.route("/").get(getAllAdmin).post(
+  uploadProfileImage,
+  resizeProfileImage,
+  signUpValidator,
+  uploadImageInCloud,
+  updateUserToAdmin
+);
 
 
 

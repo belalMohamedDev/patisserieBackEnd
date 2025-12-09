@@ -81,25 +81,8 @@ exports.signUpValidator = [
       })
     ),
 
-  check("role")
-    .optional()
-    .isIn(["user", "admin", "delivery"])
-    .withMessage((value, { req }) =>
-      i18n.__({
-        phrase: "ThisroleNotFound",
-        locale: req.headers["lang"] || "en",
-      })
-    ),
 
-  check("branchAddress")
-    .optional()
-    .isMongoId()
-    .withMessage((value, { req }) =>
-      i18n.__({
-        phrase: "invalidBranchAddressFormat",
-        locale: req.headers["lang"] || "en",
-      })
-    ),
+
 
   validatorMiddleware,
 ];

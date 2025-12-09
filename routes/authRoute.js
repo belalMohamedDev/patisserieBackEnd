@@ -3,9 +3,7 @@ const { login } = require("../services/authServices/loginServices");
 
 const {
   signUp,
-  resizeProfileImage,
-  uploadImageInCloud,
-  uploadProfileImage,
+
 } = require("../services/authServices/signUpServices");
 const { logOut } = require("../services/authServices/logOut");
 const { newAccessToken } = require("../services/authServices/newAccessToken");
@@ -34,10 +32,10 @@ const router = express.Router();
 router
   .route("/signUp")
   .post(
-    uploadProfileImage,
-    resizeProfileImage,
+    // uploadProfileImage,
+    // resizeProfileImage,
     signUpValidator,
-    uploadImageInCloud,
+    // uploadImageInCloud,
     signUp
   );
 
