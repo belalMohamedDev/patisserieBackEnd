@@ -2,9 +2,9 @@ const userModel = require("../../../modules/userModel");
 const asyncHandler = require("express-async-handler");
 const i18n = require("i18n");
 const { sanitizeUser } = require("../../../utils/apiFeatures/sanitizeData");
-const { uploadToCloudinary } = require("../../middleware/cloudinaryMiddleWare");
-const { uploadSingleImage } = require("../../middleware/imageUploadMiddleware");
-const { resizeImage } = require("../../middleware/resizeImage");
+const { uploadToCloudinary } = require("../../../middleware/cloudinaryMiddleWare");
+const { uploadSingleImage } = require("../../../middleware/imageUploadMiddleware");
+const { resizeImage } = require("../../../middleware/resizeImage");
 
 //upload single image
 exports.uploadProfileImage = uploadSingleImage("image");
