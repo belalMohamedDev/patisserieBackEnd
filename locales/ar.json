@@ -169,6 +169,7 @@
 	"deliveredOrder": "طلبات المستلمة",
 	"admin": "ادمن",
 	"orders": "الطلبات",
-    "adminMustHaveBranch": "يجب ربط حساب المشرف بأحد الفروع قبل إنشاء الطلب."
-
+	"adminMustHaveBranch": "يجب ربط حساب المشرف بأحد الفروع قبل إنشاء الطلب.",
+	"SuccessToUpdate": "SuccessToUpdate",
+	"user": "user"
 }
