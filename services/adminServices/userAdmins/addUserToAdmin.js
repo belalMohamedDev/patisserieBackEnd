@@ -23,7 +23,7 @@ exports.updateUserToAdmin = asyncHandler(async (req, res) => {
 
     // 1) Check user exists
     const user = await userModel.findOne({ email });
-    
+
     if (!user) {
         return res.status(404).json({
             status: false,
@@ -31,7 +31,7 @@ exports.updateUserToAdmin = asyncHandler(async (req, res) => {
         });
     }
 
-    // 2) Update role
+    // 2) Update role + additional fields
     user.role = "admin";
     user.storeAddress = storeAddress;
     user.image = req.body.image;
@@ -41,7 +41,13 @@ exports.updateUserToAdmin = asyncHandler(async (req, res) => {
 
     await user.save();
 
-    // 3) Send response
+    // 3) Populate storeAddress
+    await user.populate({
+        path: "storeAddress",
+        select: "location region briefness BranchArea",
+    });
+
+    // 4) Send response
     res.status(200).json({
         status: true,
         message: i18n.__("SuccessToUpdate") + " " + i18n.__("admin"),
