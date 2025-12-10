@@ -5,6 +5,10 @@ const {
 
 } = require("../services/adminServices/userAdmins/adminServices");
 
+const {
+  updateAdminToUser
+
+} = require("../services/adminServices/userAdmins/returnAdmionToUser");
 
 const {
   resizeProfileImage, updateUserToAdmin, uploadImageInCloud, uploadProfileImage
@@ -24,7 +28,7 @@ router.route("/").get(getAllAdmin).post(
   resizeProfileImage,
   uploadImageInCloud,
   updateUserToAdmin
-);
+).delete(updateAdminToUser);
 
 
 
