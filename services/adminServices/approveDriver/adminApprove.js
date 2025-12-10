@@ -15,6 +15,9 @@ exports.getAllDriver = asyncHandler(async (req, res) => {
   }).sort({
     driverActive: -1,
     completeData: -1,
+  }).populate({
+    path: "storeAddress",
+    select: "location region briefness BranchArea",
   });
 
 
