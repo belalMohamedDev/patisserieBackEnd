@@ -28,9 +28,11 @@ router.route("/").get(getAllAdmin).post(
   resizeProfileImage,
   uploadImageInCloud,
   updateUserToAdmin
-).delete(updateAdminToUser);
+);
 
 
+
+router.route("/:id").delete(updateAdminToUser);
 
 
 
