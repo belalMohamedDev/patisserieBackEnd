@@ -8,7 +8,7 @@ const {
 const {
   updateAdminToUser
 
-} = require("../services/adminServices/userAdmins/returnAdmionToUser");
+} = require("../services/adminServices/userAdmins/returnAdminToUser");
 
 const {
   resizeProfileImage, updateUserToAdminOrDelivery, uploadImageInCloud, uploadProfileImage
