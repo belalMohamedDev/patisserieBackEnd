@@ -15,10 +15,10 @@ exports.resizeProfileImage = resizeImage();
 // upload image in cloud
 exports.uploadImageInCloud = uploadToCloudinary("adminProfile");
 
-// @desc Update user role to admin
+// @desc Update user role to admin or delivery
 // @route POST /api/v1/admin
 // @access Private (admin only)
-exports.updateUserToAdmin = asyncHandler(async (req, res) => {
+exports.updateUserToAdminOrDelivery = asyncHandler(async (req, res) => {
     const { email, storeAddress } = req.body;
 
     // 1) Check user exists
@@ -32,7 +32,7 @@ exports.updateUserToAdmin = asyncHandler(async (req, res) => {
     }
 
     // 2) Update role + additional fields
-    user.role = "admin";
+    user.role = req.body.role || "admin";
     user.storeAddress = storeAddress;
     user.image = req.body.image;
     user.publicId = req.body.publicId;
