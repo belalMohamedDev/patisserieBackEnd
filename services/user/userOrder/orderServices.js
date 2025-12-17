@@ -12,8 +12,7 @@ const ApiError = require("../../../utils/apiError/apiError");
 //  @route   POST /api/v1/orders/:cartId
 //  @access  Protected (user)
 exports.createCashOrder = asyncHandler(async (req, res, next) => {
-
-
+  const { paidAmount, isDeferred } = req.body;
 
   // 1) Get cart based on user
   const cart = await CartModel.findOne({ user: req.userModel._id });
@@ -29,7 +28,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
 
   let nearbyStoreAddress = req.body.nearbyStoreAddress;
   if (isAdmin && !nearbyStoreAddress) {
-  
+
     if (!req.userModel.storeAddress) {
       return next(new ApiError(i18n.__("adminMustHaveBranch"), 400));
     }
@@ -48,29 +47,51 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     shippingAddress: req.body.shippingAddress,
     nearbyStoreAddress,
     orderSource: req.body.orderSource
- 
+
 
   };
 
 
   // If the user is admin, set the order status to 'accepted' (1) and record the acceptance time
   // Also, if the order source is 'phone', capture additional customer details
-  if (isAdmin) {
-    orderData.status = 1;
-    orderData.adminAcceptedAt = new Date();
+ if (isAdmin) {
+  orderData.status = 1;
+  orderData.adminAcceptedAt = new Date();
+  orderData.paymentMethodType = "cash";
 
-    if (req.body.orderSource === "phone") {
-      orderData.customerName = req.body.customerName;
-      orderData.customerPhone = req.body.customerPhone;
-      orderData.customerAddressText = req.body.customerAddressText;
-    }else if (req.body.orderSource === "in_store") {
-      const total = cart.totalOrderPrice - cart.shippingPrice - cart.taxPrice;
-      orderData.totalOrderPrice = parseFloat(total.toFixed(2));
-      orderData.taxPrice = 0;
-      orderData.shippingPrice = 0;
+  let payments = [];
+
+  if (isDeferred && paidAmount > 0) {
+    if (paidAmount > cart.totalOrderPrice) {
+      return next(
+        new ApiError(i18n.__("paidAmountExceedsTotal"), 400)
+      );
     }
 
+    payments.push({
+      amount: paidAmount,
+      paidBy: req.userModel._id,
+      paidAt: new Date(),
+
+    });
   }
+
+  if (isDeferred) {
+    orderData.payments = payments;
+  }
+
+  if (req.body.orderSource === "phone") {
+    orderData.customerName = req.body.customerName;
+    orderData.customerPhone = req.body.customerPhone;
+    orderData.customerAddressText = req.body.customerAddressText;
+  } else if (req.body.orderSource === "in_store") {
+    const total = cart.totalOrderPrice - cart.shippingPrice - cart.taxPrice;
+    orderData.totalOrderPrice = parseFloat(total.toFixed(2));
+    orderData.taxPrice = 0;
+    orderData.shippingPrice = 0;
+  }
+}
+
 
 
   let order = await OrderModel.create(

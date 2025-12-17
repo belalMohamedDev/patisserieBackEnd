@@ -35,7 +35,7 @@ const paymentSchema = mongoose.Schema(
       ref: "User",
     },
 
-    note: String,
+   
   },
   { _id: false }
 );
@@ -122,11 +122,7 @@ const OrderSchema = mongoose.Schema(
       default: "unpaid",
     },
 
-    installmentPlan: {
-      totalInstallments: Number,
-      installmentAmount: Number,
-      nextPaymentDate: Date,
-    },
+
 
     paymentMethodType: {
       type: String,
