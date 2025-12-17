@@ -22,7 +22,6 @@ const StoreAddressSchema = new mongoose.Schema(
     },
     
 
-
     region: {
       type: String,
       trim: true,
@@ -31,11 +30,13 @@ const StoreAddressSchema = new mongoose.Schema(
       minlength: [3, "too short Address region"],
     },
 
+
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
       coordinates: { type: [Number], default: [0, 0] },
     },
     
+  
     active: {
       type: Boolean,
       default: true,
@@ -47,6 +48,7 @@ const StoreAddressSchema = new mongoose.Schema(
         enum: ["Polygon"], 
         required: true,
       },
+      
       coordinates: {
         type: [[[Number]]], 
         required: true,
