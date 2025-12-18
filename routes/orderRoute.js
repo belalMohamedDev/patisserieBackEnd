@@ -18,6 +18,12 @@ const {
   getAllAdminOrder, getOrderStats
 } = require("../services/adminServices/adminOrder/adminOrder");
 
+
+const {
+ addPaymentToOrder
+} = require("../services/adminServices/adminOrder/addPaymentToOrder");
+
+
 const {
   passingOrderDeliveredToReqBody,
 } = require("../services/driverServices/orders/deliveredOrder");
@@ -52,12 +58,13 @@ router
 
 
 
-
-
+router
+  .route("/admin/:orderId/payments")
+  .post(authServices.allowedTo("admin"), addPaymentToOrder);
 
 router
   .route("/admin")
-  .get(authServices.allowedTo("admin"), getAllAdminOrder);
+  .get(authServices.allowedTo("admin"), getAllAdminOrder); 
 
 
 router

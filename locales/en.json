@@ -171,5 +171,6 @@
 	"orders": "orders",
 	"adminMustHaveBranch": "Admin must be associated with a store branch before creating an order.",
 	"SuccessToUpdate": "SuccessToUpdate",
-	"user": "user"
+	"user": "user",
+	"paymentAddedSuccessfully": "paymentAddedSuccessfully"
 }
