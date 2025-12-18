@@ -19,11 +19,8 @@ const asyncHandler = require("express-async-handler");
 // };
 
 
-
 // //  @dec  change order status
 exports.orderUpdate = factory.updateOne(orderModel, "user order");
-
-
 
 
 
@@ -31,7 +28,6 @@ exports.orderUpdate = factory.updateOne(orderModel, "user order");
 // //  @route  Get /api/v1/orders/admin
 // //  @access private/admin
 exports.getAllAdminOrder = factory.getAllData(orderModel, 'orders', orderModel);
-
 
 
 
@@ -60,27 +56,16 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
         ],
 
 
-
-
-
         pendingDriver: [
           { $match: { status: 2 } },
           { $count: "count" }
         ],
 
 
-
-
         DeliveredOrders: [
           { $match: { status: 3 } },
           { $count: "count" }
         ],
-
-
-
-
-
-
 
         completeOrders: [
           { $match: { status: 4 } },

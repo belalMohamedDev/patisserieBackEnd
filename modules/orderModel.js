@@ -35,7 +35,7 @@ const paymentSchema = mongoose.Schema(
       ref: "User",
     },
 
-   
+
   },
   { _id: false }
 );
@@ -123,6 +123,11 @@ const OrderSchema = mongoose.Schema(
     },
 
 
+    isDeferred: {
+      type: Boolean,
+      default: false,
+    },
+
 
     paymentMethodType: {
       type: String,
@@ -151,6 +156,11 @@ OrderSchema.pre("save", function (next) {
   if (this.orderSource === "in_store") {
     this.taxPrice = 0;
     this.shippingPrice = 0;
+  }
+
+  if (!this.isDeferred) {
+    this.paymentStatus = "paid";
+    return next();
   }
 
   const totalPaid = this.payments.reduce(
@@ -212,7 +222,7 @@ OrderSchema.pre(/^find/, function (next) {
       path: "user",
       select: "name email phone",
     },
-     {
+    {
       path: "driverId",
       select: "name email phone",
     },

@@ -54,43 +54,44 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
 
   // If the user is admin, set the order status to 'accepted' (1) and record the acceptance time
   // Also, if the order source is 'phone', capture additional customer details
- if (isAdmin) {
-  orderData.status = 1;
-  orderData.adminAcceptedAt = new Date();
-  orderData.paymentMethodType = "cash";
+  if (isAdmin) {
+    orderData.status = 1;
+    orderData.adminAcceptedAt = new Date();
+    orderData.paymentMethodType = "cash";
 
-  let payments = [];
+    let payments = [];
 
-  if (isDeferred && paidAmount > 0) {
-    if (paidAmount > cart.totalOrderPrice) {
-      return next(
-        new ApiError(i18n.__("paidAmountExceedsTotal"), 400)
-      );
+    if (isDeferred && paidAmount > 0) {
+      if (paidAmount > cart.totalOrderPrice) {
+        return next(
+          new ApiError(i18n.__("paidAmountExceedsTotal"), 400)
+        );
+      }
+
+      payments.push({
+        amount: paidAmount,
+        paidBy: req.userModel._id,
+        paidAt: new Date(),
+
+      });
     }
 
-    payments.push({
-      amount: paidAmount,
-      paidBy: req.userModel._id,
-      paidAt: new Date(),
+    if (isDeferred) {
+      orderData.payments = payments;
+      orderData.isDeferred = isDeferred;
+    }
 
-    });
+    if (req.body.orderSource === "phone") {
+      orderData.customerName = req.body.customerName;
+      orderData.customerPhone = req.body.customerPhone;
+      orderData.customerAddressText = req.body.customerAddressText;
+    } else if (req.body.orderSource === "in_store") {
+      const total = cart.totalOrderPrice - cart.shippingPrice - cart.taxPrice;
+      orderData.totalOrderPrice = parseFloat(total.toFixed(2));
+      orderData.taxPrice = 0;
+      orderData.shippingPrice = 0;
+    }
   }
-
-  if (isDeferred) {
-    orderData.payments = payments;
-  }
-
-  if (req.body.orderSource === "phone") {
-    orderData.customerName = req.body.customerName;
-    orderData.customerPhone = req.body.customerPhone;
-    orderData.customerAddressText = req.body.customerAddressText;
-  } else if (req.body.orderSource === "in_store") {
-    const total = cart.totalOrderPrice - cart.shippingPrice - cart.taxPrice;
-    orderData.totalOrderPrice = parseFloat(total.toFixed(2));
-    orderData.taxPrice = 0;
-    orderData.shippingPrice = 0;
-  }
-}
 
 
 
